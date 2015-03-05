@@ -1,7 +1,7 @@
 module solenoid(insertionClearance=true) {
 
 	//Solenoid dimensions
-	tubeDiameter = 6.5;//5.6 measured
+	tubeDiameter = 8;//5.6 measured
 	bodyDiameter = 24; //23.5 measured
 	lowerRingDiameter = 12;//10.85 measured
 //    if(center) {
@@ -13,7 +13,7 @@ module solenoid(insertionClearance=true) {
           translate([0, -(tubeDiameter/2), 0.0]) cylinder(d=tubeDiameter, h=10.9); //Drain tube
           translate([0, 0, 10.8]) color([.2,.4,0]) cylinder(d=lowerRingDiameter,h=4.4); //Lower Ring
 			if(insertionClearance) {
-				translate([-(tubeDiameter/2), 0, 10.8]) cube([tubeDiameter, 20.1, 32.5]); //Supply Tube
+				translate([-(tubeDiameter/2), 0, 10.8]) cube([tubeDiameter, 50.1, 32.5]); //Supply Tube
 
 			} else {
 				translate([0, (20/2), 10.8+(tubeDiameter/2)]) rotate([90,0,0]) cylinder(d=tubeDiameter, h=20.1, center=true); //Supply Tube
