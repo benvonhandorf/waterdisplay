@@ -6,23 +6,27 @@ partialStart = true; //if partial, no spacing will be provided at the ends but a
 partialEnd = true;
 alignmentPinDiameter = 3;
 alignmentPinDepth = 6;
+compact = true;
+zOffset = -9;
 
-spacing = 24 + additionalSpacing;
+spacing = compact ? 18 : 24 + additionalSpacing;
 
-blockLength = (spacing * (solenoidCount + (partialStart ? 0 : 0.5) + (partialEnd ? 0 : 0.5) ) );
+blockLength = (spacing * ((compact ? solenoidCount + 1 :solenoidCount) + (partialStart ? 0 : 0.5) + (partialEnd ? 0 : 0.5) ) );
+yOffsetAlernate = compact ? 24 : 0;
 
 difference() {
 	union() {
-		cube([blockLength, 30, 30]);
+		cube([blockLength, compact ? 50 : 30 , 20]);
 	}
 
 	for ( counter = [0 : solenoidCount - 1] ) {
-		translate([(partialStart ? additionalSpacing / 2 : 24/2) + (spacing * counter), 2.5, 0])solenoid(true);
+		translate([(partialStart ? additionalSpacing / 2 : 24/2) + (spacing * counter), 2.5 + (counter % 2 == 0 ? 0.0 : yOffsetAlernate), zOffset])
+			solenoid(true);
 	}
 
 	if(partialEnd) {
 		//Provide two alignment pins at the end
-		translate([blockLength, 27, 27])
+		translate([blockLength, 27, 17])
 			rotate([0,90,0])
 				cylinder(d=alignmentPinDiameter, h=alignmentPinDepth, center=true, $fn=10);
 		translate([blockLength, 3, 3])
@@ -32,7 +36,7 @@ difference() {
 
 	if(partialStart) {
 		//Provide two alignment pins at the beginning
-		translate([0, 27, 27])
+		translate([0, 27, 17])
 			rotate([0,90,0])
 				cylinder(d=alignmentPinDiameter, h=alignmentPinDepth, center=true, $fn=10);
 		translate([0, 3, 3])
