@@ -3,7 +3,7 @@ module solenoid(insertionClearance=true) {
 	//Solenoid dimensions
 	tubeDiameter = 8;//5.6 measured
 	bodyDiameter = 24; //23.5 measured
-	lowerRingDiameter = 12;//10.85 measured
+	lowerRingDiameter = 13;//10.85 measured
 //    if(center) {
 //        offset = [-bodyDiameter/2, -bodyDiameter/2, -47.5/2];
 //    }
