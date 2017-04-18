@@ -1,4 +1,4 @@
-update=Monday, April 17, 2017 'PMt' 08:10:33 PM
+update=Monday, April 17, 2017 'PMt' 10:41:15 PM
 version=1
 last_client=kicad
 [pcbnew]
@@ -27,7 +27,7 @@ NetIExt=net
 version=1
 [eeschema]
 version=1
-LibDir=
+LibDir=../KiCad Libraries
 [eeschema/libraries]
 LibName1=power
 LibName2=device
@@ -59,3 +59,6 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=stm8
+LibName31=additional_components
+LibName32=diode
+LibName33=motors
