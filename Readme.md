@@ -56,13 +56,13 @@ Given the lack of additional requirements, where possible GPIO pins should be se
 
 #### Microcontroller supporting parts
 
-* 100 uF ceramic capacitor - Power smoothing Capacitor 
-* Cext - 470-3300 nF 
+* 1 uF ceramic capacitor - Power smoothing Capacitor 
+* Cext - 1 uf
   * 0.3 Ohm Max ESR at 1MHz 
   * 15 nH Max ESL at 1MHz
 * If an external oscillator is necessary:
   * 16 MHz crystal
-  * 2 x 20pF Load capacitors
+  * 2 x 20pF Load capacitors, depending on Cload
 
 ### Connectivity
 

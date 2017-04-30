@@ -1,0 +1,13 @@
+Qty,partname,description,lib
+0,"1N4001","50V 1A General Purpose Rectifier Diode, DO-41","diode"
+0,"AMS1117","1A Low Dropout regulator, positive, adjustable output, NRND","additional_components"
+0,"C","Unpolarized capacitor","device"
+0,"CONN_01X03","Connector, single row, 01x03, pin header","conn"
+0,"CONN_01X04","Connector, single row, 01x04, pin header","conn"
+0,"CONN_01X06","Connector, single row, 01x06, pin header","conn"
+0,"Crystal","Two pin crystal","device"
+0,"IRLB8721PBF","30V Vds, 62A Id, N-Channel MOSFET, TO-220","transistors"
+0,"LED","LED generic","device"
+0,"R","Resistor","device"
+0,"STM8S003F3P","16MHz, 8K Flash, 1k RAM, 128 EEPROM, USART, I2C, SPI, TSSOP20","stm8"
+0,"SpadeConnSolenoid","","additional_components"

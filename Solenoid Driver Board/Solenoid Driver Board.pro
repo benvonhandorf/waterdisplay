@@ -1,4 +1,4 @@
-update=Monday, April 17, 2017 'PMt' 10:41:15 PM
+update=Saturday, April 29, 2017 'PMt' 08:45:36 PM
 version=1
 last_client=kicad
 [pcbnew]
@@ -62,3 +62,4 @@ LibName30=stm8
 LibName31=additional_components
 LibName32=diode
 LibName33=motors
+LibName34=SKyIronLogo
