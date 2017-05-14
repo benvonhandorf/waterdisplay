@@ -13,12 +13,20 @@ class COLORS:
 	PURPLE   = (255,   0,   255)
 	GREEN = (  0, 255,   0)
 	BLUE  = (  0,   0, 255)
+	YELLOW = (255, 255, 0)
+	BLUEGREEN = (0x00, 0x66, 0xff)
+	ORANGE = (255, 153, 51)
 
 	def listFromTuple(tuple):
 		return [tuple[0], tuple[1], tuple[2]]
 
 	def tupleFromList(list):
 		return (list[0], list[1], list[2])
+
+	def fadeElement(sourceElement, targetElement, fraction):
+		delta = targetElement - sourceElement
+
+		return sourceElement + (fraction * delta)
 
 class SprayerNode:
 	RADIUS = 20
@@ -27,9 +35,38 @@ class SprayerNode:
 	def solenoidCommand(self, command):
 		self.spraying = command[2] > 0
 
+	def offCommand(self, command):
+		self.spraying = False
+		self.targetLedColor = None
+		self.ledColor = COLORS.BLACK
+
 	def ledCommand(self, command):
 		# command[2] = number of LEDs being addressed.  Assume 1
 		self.ledColor = COLORS.tupleFromList(command[-3:])
+
+	def fadeLedCommand(self, command):
+		# command[3] = number of LEDs being addressed.  Assume 1
+		self.fadeDurationMs = command[2] * 50
+		self.fadeDurationMsComplete = 0
+		self.targetLedColor = COLORS.tupleFromList(command[-3:])
+		self.sourceLedColor = self.ledColor
+
+	def fadeLed(self, msDelta):
+		if self.targetLedColor is None:
+			return
+
+		self.fadeDurationMsComplete = self.fadeDurationMsComplete + msDelta
+		fraction = min(1.0, self.fadeDurationMsComplete / self.fadeDurationMs)
+
+		if fraction >= 1.0:
+			self.ledColor = self.targetLedColor
+			self.targetLedColor = None
+			self.sourceLedColor = None
+			return
+
+		self.ledColor = (COLORS.fadeElement(self.sourceLedColor[0], self.targetLedColor[0], fraction),
+			COLORS.fadeElement(self.sourceLedColor[1], self.targetLedColor[1], fraction),
+			COLORS.fadeElement(self.sourceLedColor[2], self.targetLedColor[2], fraction))
 
 
 	def __init__(self, address, screen, location, angle):
@@ -39,10 +76,13 @@ class SprayerNode:
 		self.angle = angle
 		self.spraying = False
 		self.ledColor = COLORS.BLUE
+		self.targetLedColor = None
 
 		self.commands = {
 			'S': self.solenoidCommand,
-			'L': self.ledCommand
+			'L': self.ledCommand,
+			'l': self.fadeLedCommand,
+			'F': self.offCommand
 		}
 
 	def processCommand(self, command):
@@ -52,9 +92,11 @@ class SprayerNode:
 
 			commandProcessor(command)
 
-	def update(self, commands):
+	def update(self, commands, msDelta):
 		for command in commands:
 			self.processCommand(command)
+
+		self.fadeLed(msDelta)
 
 		pygame.draw.circle(self.screen, self.ledColor, self.location, self.RADIUS, 0)
 		pygame.draw.circle(self.screen, COLORS.BLACK, self.location, self.RADIUS, 2)
@@ -72,7 +114,7 @@ class DisplayProgram:
 		self.timeToNextCommand = 0
 		self.nodeCount = 3
 		self.nodeSpraying = 0
-		self.colorSet = [COLORS.RED, COLORS.GREEN, COLORS.BLUE, COLORS.PURPLE]
+		self.colorSet = [COLORS.RED, COLORS.GREEN, COLORS.BLUE, COLORS.PURPLE, COLORS.YELLOW, COLORS.BLUEGREEN, COLORS.ORANGE]
 		self.colorPosition = 0
 
 	def commandFor(address, command, data):
@@ -91,12 +133,12 @@ class DisplayProgram:
 
 		if(self.timeToNextCommand <= 0):
 			self.timeToNextCommand = 1000
-			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'S', [0x00]))
+			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'F', []))
 			self.nodeSpraying = self.nodeSpraying + 1
 			if self.nodeSpraying > self.nodeCount:
 				self.nodeSpraying = 1
 
-			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'L', [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
+			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'l', [0x0A] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
 			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'S', [0x01]))
 			self.colorPosition = (self.colorPosition + 1) % len(self.colorSet)
 
@@ -146,7 +188,7 @@ class PyManMain:
 			commands = self.program.update(self.clock.get_time())
 
 			for node in self.nodes:
-				node.update(commands)
+				node.update(commands, self.clock.get_time())
 
 			pygame.display.update()
 
