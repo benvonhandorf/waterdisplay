@@ -87,7 +87,7 @@ class SprayerNode:
 
 	def processCommand(self, command):
 		if command[0] & 0x0F == self.address:
-			commandByte = command[1]
+			commandByte = command[1].decode(encoding='UTF-8')
 			commandProcessor = self.commands[commandByte]
 
 			commandProcessor(command)
@@ -126,6 +126,9 @@ class DisplayProgram:
 
 		return result
 
+	def addressFor(self, startingNode, offset):
+		return (( startingNode + offset ) % self.nodeCount ) + 1
+
 	def update(self, msDelta):
 		result = []
 
@@ -133,14 +136,16 @@ class DisplayProgram:
 
 		if(self.timeToNextCommand <= 0):
 			self.timeToNextCommand = 1000
-			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'F', []))
+			result.append(DisplayProgram.commandFor(self.addressFor(self.nodeSpraying, 0), 'F'.encode(encoding='UTF-8'), []))
 			self.nodeSpraying = self.nodeSpraying + 1
-			if self.nodeSpraying > self.nodeCount:
-				self.nodeSpraying = 1
+			if self.nodeSpraying >= self.nodeCount:
+				self.nodeSpraying = 0
 
-			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'l', [0x0A] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
-			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'S', [0x01]))
-			self.colorPosition = (self.colorPosition + 1) % len(self.colorSet)
+			for offset in range(0, 2) :
+				address = self.addressFor(self.nodeSpraying, offset)
+				result.append(DisplayProgram.commandFor(address, 'l'.encode(encoding='UTF-8'), [0x10] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
+				result.append(DisplayProgram.commandFor(address, 'S'.encode(encoding='UTF-8'), [0x01]))
+				self.colorPosition = (self.colorPosition + 1) % len(self.colorSet)
 
 		return result
 
@@ -164,14 +169,18 @@ class PyManMain:
 
 		self.program = DisplayProgram()
 
-		self.nodes = [SprayerNode(1, self.screen, (320+100, 240-100), 180-45),
-			SprayerNode(2, self.screen, (320, 240+100), 270),
-			SprayerNode(3, self.screen, (320-100, 240-100), 45),			
+		self.nodes = [SprayerNode(1, self.screen, (320+100, 75), 180-45),
+			SprayerNode(2, self.screen, (320, 425), 270),
+			SprayerNode(3, self.screen, (320-100, 75), 45),			
 			]
 
 		pygame.display.set_caption('Display Development')
 
 		self.clock.tick()
+
+	def drawPond(self):
+		pygame.draw.ellipse(self.screen, COLORS.BLUE, (200, 75, 250, 200), 0)
+		pygame.draw.ellipse(self.screen, COLORS.BLUE, (200, 200, 250, 200), 0)
 
 
 	def MainLoop(self):
@@ -185,7 +194,12 @@ class PyManMain:
 
 			self.screen.fill(COLORS.WHITE)
 
+			self.drawPond()
+
 			commands = self.program.update(self.clock.get_time())
+
+			for command in commands:
+				print(" ".join([str(x) for x in command]))
 
 			for node in self.nodes:
 				node.update(commands, self.clock.get_time())
