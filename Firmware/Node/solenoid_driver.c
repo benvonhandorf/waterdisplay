@@ -7,14 +7,14 @@
 //Dev board uses PB5
 
 void solenoid_init() {
-	PC_DDR = SOLENOID_BIT_MASK;
-	PC_CR1 = SOLENOID_BIT_MASK;
+  PC_DDR = SOLENOID_BIT_MASK;
+  PC_CR1 = SOLENOID_BIT_MASK;
 }
 
 void solenoid_write(uint8_t active) {
-	if(active) {
-		PC_ODR |= SOLENOID_BIT_MASK;
-	} else {
-		PC_ODR &= ~SOLENOID_BIT_MASK;
-	}
+  if(active) {
+    PC_ODR |= SOLENOID_BIT_MASK;
+  } else {
+    PC_ODR &= ~SOLENOID_BIT_MASK;
+  }
 }
