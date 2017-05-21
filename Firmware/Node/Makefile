@@ -21,7 +21,7 @@ clean:
 	rm -f *.asm *.ihx *.cdb *.lst *.map *.lk *.rel *.rst *.sym *.o
 
 %.o: %.c
-	$(TESTCC) -c $<
+	$(TESTCC) -c -DDEBUG=1 $<
 
 unitTest: circular_buffer.o circular_buffer_test.o
 	$(TESTLD) -o circular_buffer_test circular_buffer.o circular_buffer_test.o

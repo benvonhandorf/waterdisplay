@@ -1,7 +1,9 @@
 #include "stm8s.h"
 #include "uart_driver.h"
+#include "circular_buffer.h"
 
 static CIRCULAR_BUFFER receiveBuffer;
+static CIRCULAR_BUFFER transmitBuffer;
 
 void uart_init() {
   UART1_CR2 = UART_CR2_TEN;
@@ -15,5 +17,7 @@ void uart_init() {
 
 
 void uart_write(char *buffer, uint8_t size) {
+	buffer_copy_from(&transmitBuffer, buffer, size);
 
+	
 }

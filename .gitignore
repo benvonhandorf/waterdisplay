@@ -10,3 +10,5 @@
 *.rel
 *.rst
 *.sym
+*.o
+*_test

@@ -1,29 +1,39 @@
 #include "circular_buffer.h"
 
+#ifdef DEBUG
+#include <stdio.h>
+
+void buffer_dump(CIRCULAR_BUFFER *buffer) {
+  printf("Pos: %d Bytes:%d Data:\'%s\'\n", buffer-> pos, buffer->bytes, buffer->buffer);
+}
+
+#endif
+
 void buffer_init(CIRCULAR_BUFFER* buffer) {
-	buffer->end = (uint8_t)0;
+	buffer->bytes = (uint8_t)0;
 	buffer->pos = (uint8_t)0;
 }
 
 uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, char* source, uint8_t len) {
   uint8_t i;
-  for(i = 0; i < len ; i++) {
+  uint8_t bytesToCopy = len;
+
+  if(bytesToCopy > BUFFER_SIZE - targetBuffer->bytes) {
+    bytesToCopy = BUFFER_SIZE - targetBuffer->bytes;
+  }
+
+  for(i = 0; i < bytesToCopy ; i++) {
   	if(source[i] == 0x00) {
-  		//Don't bother copying null
+  		//Don't bother copying the null
   		return i;
   	}
 
-    targetBuffer->buffer[targetBuffer->end] = source[i];
-    targetBuffer->end++;
+    uint8_t offset = targetBuffer->pos + i;
 
-    if(targetBuffer->end >= BUFFER_SIZE) {
-      targetBuffer->end = 0;
-    }
+    offset = offset % BUFFER_SIZE;
 
-    if(targetBuffer->end == targetBuffer->pos) {
-      //We've wrapped around and can't continue writing to the buffer.
-      return i;
-    }
+    targetBuffer->buffer[offset] = source[i];
+    targetBuffer->bytes++;
   }
 
   return i;
@@ -31,37 +41,39 @@ uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, char* source, uint8_t le
 
 uint8_t buffer_copy_to(CIRCULAR_BUFFER* sourceBuffer, char* target, uint8_t maxLen) {
   uint8_t i;
-  uint8_t sourceOffset = sourceBuffer->pos;
 
-  for(i = 0; i < maxLen ; i++) {
-  	if((sourceOffset + sourceBuffer->pos) == sourceBuffer->end) {
-      return i;
-    }
+  uint8_t bytesToCopy = maxLen;
+
+  uint8_t sourceOffset = 0;
+
+  if(bytesToCopy > sourceBuffer->bytes) {
+    bytesToCopy = sourceBuffer->bytes;
+  }
+
+  for(i = 0; i < bytesToCopy ; i++) {
+    sourceOffset = sourceBuffer->pos + i;
+
+  	sourceOffset = sourceOffset % BUFFER_SIZE;
 
     target[i] = sourceBuffer->buffer[sourceOffset];
-
-    sourceOffset++;
-
-    if(sourceOffset >= BUFFER_SIZE) {
-      sourceOffset = 0;
-    }
   }
 
   return i;
 }
 
 uint8_t buffer_consume(CIRCULAR_BUFFER* buffer, uint8_t bytes) {
-	for(int i = 0; i < bytes; i++) {
-		if(buffer->pos == buffer->end) {
-			return i;
-		}
+  uint8_t bytesToConsume = bytes;
 
-		buffer->pos++;
+  if(bytesToConsume > buffer->bytes) {
+    bytesToConsume = buffer->bytes;
+  }
 
-		if(buffer->pos >= BUFFER_SIZE) {
-      		buffer->pos = 0;
-    	}
-	}
+	buffer->pos = (buffer->pos + bytesToConsume) % BUFFER_SIZE;
+  buffer->bytes = buffer->bytes - bytesToConsume;
 
-	return bytes;
+	return bytesToConsume;
+}
+
+uint8_t buffer_bytes(CIRCULAR_BUFFER *buffer) {
+  return buffer->bytes;
 }

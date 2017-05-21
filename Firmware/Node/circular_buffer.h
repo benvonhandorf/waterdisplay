@@ -4,7 +4,7 @@
 typedef struct {
   char  buffer[BUFFER_SIZE];
   uint8_t pos;
-  uint8_t end;
+  uint8_t bytes;
 } CIRCULAR_BUFFER ;
 
 void buffer_init(CIRCULAR_BUFFER* buffer);
@@ -14,3 +14,5 @@ uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, char *source, uint8_t le
 uint8_t buffer_copy_to(CIRCULAR_BUFFER* sourceBuffer, char *target, uint8_t maxLen);
 
 uint8_t buffer_consume(CIRCULAR_BUFFER *buffer, uint8_t bytes);
+
+uint8_t buffer_bytes(CIRCULAR_BUFFER *buffer);
