@@ -35,7 +35,7 @@ void main() {
     bytesReceived = 0;
 
     solenoid_active = !solenoid_active;
-    //solenoid_write(solenoid_active);
+    solenoid_write(solenoid_active);
 
     for(i = 0 ; i < 0x7FFF; i++) {
       for(j = 0; j < 0x40; j++) {

@@ -3,8 +3,6 @@
 #include "uart_driver.h"
 #include "circular_buffer.h"
 
-#include "solenoid_driver.h"
-
 #include <stdlib.h>
 
 static CIRCULAR_BUFFER receiveBuffer;
@@ -55,8 +53,6 @@ void uart1_rx_isr() {
   if (UART1_SR & UART_SR_RXNE) {
     char dataByte = UART1_DR;
     uint8_t bytesCopied;
-
-    solenoid_write(1);
 
     bytesCopied = buffer_copy_from(&receiveBuffer, &dataByte, 1);
   }
