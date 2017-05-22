@@ -3,4 +3,12 @@
 
 void uart_init();
 
-void uart_write(char *buffer, uint8_t size);
+void uart1_tx_isr();
+
+void uart1_rx_isr();
+
+uint8_t uart_write(char *buffer, uint8_t size);
+
+uint8_t uart_bytes_available();
+
+uint8_t uart_read(char *buffer, uint8_t size);

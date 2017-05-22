@@ -23,12 +23,12 @@ uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, char* source, uint8_t le
   }
 
   for(i = 0; i < bytesToCopy ; i++) {
+    uint8_t offset = targetBuffer->pos + i;
+
   	if(source[i] == 0x00) {
   		//Don't bother copying the null
   		return i;
   	}
-
-    uint8_t offset = targetBuffer->pos + i;
 
     offset = offset % BUFFER_SIZE;
 

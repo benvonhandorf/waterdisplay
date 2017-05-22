@@ -16,7 +16,7 @@
 #define TIM1_CAPCOM_vector	0x0C
 #define TIM2_OVF_vector		0x0D
 #define TIM2_CAPCOM_vector	0x0E
-#define UART1_TXC_vector	0x11
+#define UART1_TXE_vector	0x11
 #define UART1_RXF_vector	0x12
 #define I2C_vector			0x13
 #define ADC1_vector			0x16
