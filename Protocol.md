@@ -55,21 +55,21 @@ Set solenoids to the specified state, with 0 representing de-energized and 1 rep
 ### LED Commands
 
 #### Command: `L`
-Data Bytes: 1 Count Byte followed by (3 * Count) data bytes.
-Each set of 3 data bytes shall be in R G B order and represent a *Color Packet*.
+Data Bytes: 1 Count Byte followed by (4 * Count) data bytes.
+Each set of 4 data bytes shall be in R G B W order and represent a *Color Packet*.
 
 ##### Meaning
-Set LEDs to a specific RGB code, instantaneously.  For nodes with multiple LEDs the first *Color Packet* should correspond with the LSB solenoid, to the extend possible.  Subsequent color packets should correspond to more significant solenoids, as makes sense.
+Set LEDs to a specific RGBW code, instantaneously.  For nodes with multiple LEDs the first *Color Packet* should correspond with the LSB solenoid, to the extend possible.  Subsequent color packets should correspond to more significant solenoids, as makes sense.
 
 Since each color byte must NOT have the MSB set, each byte should be right shifted by 1 by the transmitter and left shifted by 1 by the receiver.  This results in a loss of 1 bit of accuracy for each channel, but given the general limitations of RGB LEDs this should be fairly acceptable.
 
 There is no assumption that the number of LEDs is equal to the number of solenoids, just that their physical direction corresponds roughly when appropriate.
 
-For nodes speaking to hardware with non R G B color order of bytes, it is reliant upon the node to handle the appropriate re-ordering of bits.
+For nodes speaking to hardware with non R G B W color order of bytes, it is reliant upon the node to handle the appropriate re-ordering of bits.  For nodes with no white channel on their LED, they should ignore the W byte.  In a case where no W channel is available the node MAY make an attempt to emulate it by changing the R G B channel values to use a simulated white.  No allowance is made for different white color temperatures.
 
 #### Command: `l`
-Data Bytes: 1 duration byte (max 127), 1 Count Byte (max 127) followed by (3 * Count) data bytes.
-Each set of 3 data bytes shall be in R G B order and represent a *Color Packet*.
+Data Bytes: 1 duration byte (max 127), 1 Count Byte (max 127) followed by (4 * Count) data bytes.
+Each set of 4 data bytes shall be in R G B W order and represent a *Color Packet*.
 
 ##### Meaning
 Fade LEDs to a specific RGB code.  First byte represents 50ms increments to use for fade duration, all subsequent bytes are as `L`
