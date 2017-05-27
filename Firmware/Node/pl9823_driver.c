@@ -26,33 +26,6 @@ T1 high: 1.36us
 T1 low: 0.35us
 */
 
-/* 
-Candidate Timers:
-## TIM1 ##
-- 16 bit
-- Up/down
-- Prescaler: Any integer from 1 to 65536
-- 4 C/C channels
-
-## TIM2/TIM3/TIM5 ##
-- 16 bit
-- Up only
-- Prescaler: Any power of 2 from 1 to 32768
-- 2 C/C channels (2 and 5 both have 3)
-*/
-
-typedef struct {
-  unsigned char source[4];
-  unsigned char target[4];
-  unsigned char current[4];
-} LED_DATA_T;
-
-typedef struct {
-  //Both time values are indicated in "steps", which are defined as the number of units to fade over.
-  uint8_t fadeTotal;
-  uint8_t fadeComplete;
-} FADE_DATA_T;
-
 uint8_t ledCount;
 LED_DATA_T *ledData = NULL;
 FADE_DATA_T fadeData;
@@ -159,7 +132,14 @@ void pl9823_init(uint8_t led_count) {
   sendLedString();
 }
 
-#define FADEVAL(sourceValue, targetValue, portion) (sourceValue + ((targetValue - sourceValue) *portion )/255)
+#define FADEVAL(sourceValue, targetValue, portion) (uint8_t) (sourceValue + ((((uint16_t) targetValue) - sourceValue) *portion )/255)
+
+void fadeLed(LED_DATA_T * led, uint8_t fadePortion) {
+    led->current[0] = FADEVAL(led->source[0], led->target[0], fadePortion);
+    led->current[1] = FADEVAL(led->source[1], led->target[1], fadePortion);
+    led->current[2] = FADEVAL(led->source[2], led->target[2], fadePortion);
+    led->current[3] = FADEVAL(led->source[3], led->target[3], fadePortion);
+}
 
 void pl9823_fade() {
   uint8_t fadePortion, i ;
@@ -170,14 +150,12 @@ void pl9823_fade() {
 
   fadeData.fadeComplete += 1; //Expect this to be called every 50 ms
 
-  fadePortion = (fadeData.fadeTotal * 255) / fadeData.fadeComplete;
+  fadePortion = (((uint16_t) fadeData.fadeTotal) * 255) / fadeData.fadeComplete;
 
   for(i = 0 ; i < ledCount; i++) {
     LED_DATA_T *led = ledData + i;
-    led->current[0] = FADEVAL(led->source[0], led->target[0], fadePortion);
-    led->current[1] = FADEVAL(led->source[1], led->target[1], fadePortion);
-    led->current[2] = FADEVAL(led->source[2], led->target[2], fadePortion);
-    led->current[3] = FADEVAL(led->source[3], led->target[3], fadePortion);
+
+    fadeLed(led, fadePortion);
   }
 
   sendLedString();

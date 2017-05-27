@@ -23,6 +23,8 @@ clean:
 %.o: %.c
 	$(TESTCC) -c -DDEBUG=1 $<
 
-unitTest: circular_buffer.o circular_buffer_test.o
+unitTest: circular_buffer.o circular_buffer_test.o pl9823_driver.o pl9823_driver_test.o
 	$(TESTLD) -o circular_buffer_test circular_buffer.o circular_buffer_test.o
 	./circular_buffer_test
+	$(TESTLD) -o pl9823_driver_test pl9823_driver.o pl9823_driver_test.o
+	./pl9823_driver_test
