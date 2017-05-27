@@ -3,7 +3,7 @@
 #include "stm_util.h"
 #include "uart_driver.h"
 #include "solenoid_driver.h"
-#include "pl9823_driver.h"
+#include "led_driver.h"
 
 void uart1_tx_isr_handler(void) __interrupt(UART1_TXE_vector) {
   uart1_tx_isr();
@@ -25,7 +25,7 @@ void main() {
   
   uart_init();
   solenoid_init();
-  pl9823_init(20);
+  led_init(20);
 
   rmi();
 
@@ -34,7 +34,7 @@ void main() {
       uart_write("Alpha Beta\n",11);
     }
 
-    pl9823_fade();
+    led_fade();
 
     bytesReceived = 0;
 

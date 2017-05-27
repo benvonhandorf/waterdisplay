@@ -4,7 +4,7 @@ CFLAGS := -mstm8 --std-c99
 TESTCC := gcc
 TESTLD := gcc
 
-DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel pl9823_driver.rel
+DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel pl9823_driver.rel led_driver.rel
 
 all: board_bring_up.ihx
 
@@ -23,8 +23,8 @@ clean:
 %.o: %.c
 	$(TESTCC) -c -DDEBUG=1 $<
 
-unitTest: circular_buffer.o circular_buffer_test.o pl9823_driver.o pl9823_driver_test.o
+unitTest: circular_buffer.o circular_buffer_test.o led_driver.o led_driver_test.o pl9823_driver_stub.o
 	$(TESTLD) -o circular_buffer_test circular_buffer.o circular_buffer_test.o
 	./circular_buffer_test
-	$(TESTLD) -o pl9823_driver_test pl9823_driver.o pl9823_driver_test.o
-	./pl9823_driver_test
+	$(TESTLD) -o led_driver_test led_driver.o led_driver_test.o pl9823_driver_stub.o
+	./led_driver_test
