@@ -9,4 +9,7 @@
 #define smi()                                                                  \
   { __asm__("sim"); }
 
+#define noop()			\
+  { __asm__("noop"); }
+
   

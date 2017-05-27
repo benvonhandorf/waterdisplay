@@ -3,6 +3,7 @@
 #include "stm_util.h"
 #include "uart_driver.h"
 #include "solenoid_driver.h"
+#include "pl9823_driver.h"
 
 void uart1_tx_isr_handler(void) __interrupt(UART1_TXE_vector) {
   uart1_tx_isr();
@@ -24,6 +25,7 @@ void main() {
   
   uart_init();
   solenoid_init();
+  pl9823_init();
 
   rmi();
 
@@ -31,6 +33,8 @@ void main() {
     if(!bytesReceived) {
       uart_write("Alpha Beta\n",11);
     }
+
+    pl9823_init();
 
     bytesReceived = 0;
 

@@ -4,7 +4,7 @@ CFLAGS := -mstm8 --std-c99
 TESTCC := gcc
 TESTLD := gcc
 
-DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel
+DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel pl9823_driver.rel
 
 all: board_bring_up.ihx
 
