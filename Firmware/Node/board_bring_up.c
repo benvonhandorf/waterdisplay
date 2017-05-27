@@ -25,7 +25,7 @@ void main() {
   
   uart_init();
   solenoid_init();
-  pl9823_init();
+  pl9823_init(20);
 
   rmi();
 
@@ -34,7 +34,7 @@ void main() {
       uart_write("Alpha Beta\n",11);
     }
 
-    pl9823_init();
+    pl9823_fade();
 
     bytesReceived = 0;
 
