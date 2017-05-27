@@ -15,7 +15,7 @@ void led_send_string() {
   for(i = 0; i < ledCount; i++) {
     LED_DATA_T *led = ledData + i;
 
-    uint8_t *bytes = ledData->current + (4 * i);
+    uint8_t *bytes = led->current;
     pl9823_write_led(bytes);
   }
 
@@ -29,7 +29,7 @@ void led_init(uint8_t led_count) {
 
   ledData = (LED_DATA_T *) malloc(sizeof(LED_DATA_T) * ledCount);
 
-  for(i = 0 ; i < led_count; i++) {
+  for(i = 0 ; i < ledCount; i++) {
     LED_DATA_T *led = ledData + i;
     led->current[0] = 0x00;
     led->current[1] = 0x00;
@@ -63,9 +63,10 @@ void led_fade_single(LED_DATA_T * led, uint8_t fadePortion) {
 }
 
 void led_fade() {
-  uint8_t fadePortion, i ;
+  uint8_t fadePortion;
+  uint8_t i ;
 
-  if(fadeData.fadeTotal ==0) {
+  if(fadeData.fadeTotal == 0) {
     return;
   }
 
