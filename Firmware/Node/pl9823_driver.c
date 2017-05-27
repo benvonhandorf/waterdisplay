@@ -2,10 +2,10 @@
 #include "stm8s.h"
 #include "stm_util.h"
 
-#define SOLENOID_PORT_DDR PC_DDR
-#define SOLENOID_PORT_CR1 PC_CR1
-#define SOLENOID_PORT_ODR PC_ODR
-#define SOLENOID_BIT_MASK 0x80
+#define LED_PORT_DDR PC_DDR
+#define LED_PORT_CR1 PC_CR1
+#define LED_PORT_ODR PC_ODR
+#define LED_BIT_MASK 0x80
 
 /*
 PL9823 Timing Characteristics
@@ -37,6 +37,22 @@ Candidate Timers:
 */
 
 void pl9823_init() {
-  SETBIT(SOLENOID_PORT_DDR, SOLENOID_BIT_MASK);
-  SETBIT(SOLENOID_PORT_CR1, SOLENOID_BIT_MASK);
+  SETBIT(LED_PORT_DDR, LED_BIT_MASK);
+  SETBIT(LED_PORT_CR1, LED_BIT_MASK);
+}
+
+void send1() {
+	SETBIT(LED_PORT_ODR, LED_BIT_MASK)
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;")
+	CLRBIT(LED_PORT_ODR, LED_BIT_MASK)
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;")
+	SETBIT(LED_PORT_ODR, LED_BIT_MASK)
+}
+
+void send0() {
+	SETBIT(LED_PORT_ODR, LED_BIT_MASK)
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;")
+	CLRBIT(LED_PORT_ODR, LED_BIT_MASK)
+	__asm__("nop;nop;nop")	
+	SETBIT(LED_PORT_ODR, LED_BIT_MASK)
 }
