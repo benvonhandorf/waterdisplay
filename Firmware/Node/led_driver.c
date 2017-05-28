@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "led_driver.h"
 #include "pl9823_driver.h"
 
@@ -35,19 +36,9 @@ void led_init(uint8_t led_count) {
     led->current[1] = 0x00;
     led->current[2] = 0x00;
     led->current[3] = 0x00;
-
-    led->source[0] = 0xFF;
-    led->source[1] = 0x00;
-    led->source[2] = 0x00;
-    led->source[3] = 0x00;
-
-    led->target[0] = 0x00;
-    led->target[1] = 0xFF;
-    led->target[2] = 0x00;
-    led->target[3] = 0x00;
   }
 
-  fadeData.fadeTotal = 10;
+  fadeData.fadeTotal = 0;
   fadeData.fadeComplete = 0;
 
   led_send_string();
@@ -80,5 +71,42 @@ void led_fade() {
     led_fade_single(led, fadePortion);
   }
 
+  led_send_string();
+}
+
+void led_write_values(uint8_t leds, uint8_t *led_bytes) {
+  uint8_t i;
+  for(i = 0 ; i < leds ; i++) {
+    uint8_t *bytes = led_bytes + (4 * i);
+    LED_DATA_T *led = ledData + i;
+    memcpy(&led->current, bytes, 4);
+  }
+
+  fadeData.fadeTotal = 0;
+  led_send_string();
+}
+
+void led_write_fade_target(uint8_t fade_cycles, uint8_t leds, uint8_t *led_bytes) {
+  uint8_t i;
+  for(i = 0 ; i < leds ; i++) {
+    uint8_t *bytes = led_bytes + (4 * i);
+    LED_DATA_T *led = ledData + i;
+
+    memcpy(&led->source, &led->current, 4);
+    memcpy(&led->target, bytes, 4);
+  }
+
+  fadeData.fadeTotal = fade_cycles;
+  led_fade();
+}
+
+void led_off() {
+  uint8_t i;
+  for(i = 0 ; i < ledCount ; i++) {
+    LED_DATA_T *led = ledData + i;
+    memcpy(&led->current, OFF, 4);
+  }
+
+  fadeData.fadeTotal = 0;
   led_send_string();
 }

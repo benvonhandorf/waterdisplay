@@ -15,3 +15,9 @@ void led_init(uint8_t led_count);
 void led_fade();
 
 void led_fade_single(LED_DATA_T * led, uint8_t fadePortion);
+
+void led_write_values(uint8_t leds, uint8_t *led_bytes);
+
+void led_write_fade_target(uint8_t fade_cycles, uint8_t leds, uint8_t *led_bytes);
+
+void led_off();
