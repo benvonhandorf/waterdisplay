@@ -13,8 +13,17 @@ void uart1_rx_isr_handler(void) __interrupt(UART1_RXF_vector) {
   uart1_rx_isr();
 }
 
+void tim2_capcom(void) __interrupt(TIM2_CAPCOM_vector) {
+  led_fade();
+}
+
+void tim2_init() {
+  //Targeting a 50ms timer
+  
+}
+
 void main() {
-  char buffer[64];
+  char buffer[32];
   int i = 0;
   int j = 0;
   uint8_t solenoid_active = 0;
@@ -25,30 +34,13 @@ void main() {
   
   uart_init();
   solenoid_init();
-  led_init(20);
+  led_init(1);
+  controller_init();
 
   rmi();
 
   while(1) {
-    if(!bytesReceived) {
-      uart_write("Alpha Beta\n",11);
-    }
-
-    led_fade();
-
-    bytesReceived = 0;
-
-    solenoid_active = !solenoid_active;
-    solenoid_write(solenoid_active);
-
-    for(i = 0 ; i < 0x7FFF; i++) {
-      for(j = 0; j < 0x40; j++) {
-        if(uart_bytes_available()) {
-          int bytesRead = uart_read(buffer, 64);
-          uart_write(buffer, bytesRead);
-          bytesReceived = 1;
-        } 
-      }
-    }
+    int bytesReceived = uart_read(buffer, 32);
+    controller_add_bytes(buffer, bytesReceived);
   }
 }

@@ -23,8 +23,10 @@ clean:
 %.o: %.c
 	$(TESTCC) -c -DDEBUG=1 $<
 
-unitTest: circular_buffer.o circular_buffer_test.o led_driver.o led_driver_test.o pl9823_driver_stub.o
+unitTest: circular_buffer.o circular_buffer_test.o led_driver.o led_driver_test.o pl9823_driver_stub.o solenoid_driver_stub.o controller_test.o
 	$(TESTLD) -o circular_buffer_test circular_buffer.o circular_buffer_test.o
 	./circular_buffer_test
 	$(TESTLD) -o led_driver_test led_driver.o led_driver_test.o pl9823_driver_stub.o
 	./led_driver_test
+	$(TESTLD) -o controller_test led_driver.o pl9823_driver_stub.o solenoid_driver_stub.o
+	./controller_test

@@ -103,82 +103,82 @@ int main(void) {
     || led->current[2] != ledExpectedValues[2]
     || led->current[3] != ledExpectedValues[3]) {
     fprintf(stderr, "LED values do not match expected after partial write\n");
-  exit(-1);    
-}
+    exit(-1);    
+  }
 
-led = ledData + 1;
-
-if(led->current[0] != 0x00
-  || led->current[1] != 0x00
-  || led->current[2] != 0x00
-  || led->current[3] != 0x00) {
-  fprintf(stderr, "Too many LEDs written by partial write\n");
-exit(-1);    
-}
-
-led_write_values(3, TEST_DATA);
-
-for(i = 0; i < ledCount; i++) {
-  led = ledData + i;
-  ledExpectedValues = TEST_DATA + (i * 4);
-
-  if(led->current[0] != ledExpectedValues[0]
-    || led->current[1] != ledExpectedValues[1]
-    || led->current[2] != ledExpectedValues[2]
-    || led->current[3] != ledExpectedValues[3]) {
-    fprintf(stderr, "LED values do not match expected after full write\n");
-  exit(-1);    
-}
-}
-
-if(fadeData.fadeTotal != 0) {
-  fprintf(stderr, "After full write, LED driver thinks a fade is ongoing\n");
-  exit(-1);
-}  
-
-
-led_off();
-
-for(i = 0; i < ledCount; i++) {
-  led = ledData + i;
+  led = ledData + 1;
 
   if(led->current[0] != 0x00
     || led->current[1] != 0x00
     || led->current[2] != 0x00
     || led->current[3] != 0x00) {
-    fprintf(stderr, "LED values do not match expected after off\n");
+    fprintf(stderr, "Too many LEDs written by partial write\n");
   exit(-1);    
-}
-}
+  }
 
-if(fadeData.fadeTotal != 0) {
-  fprintf(stderr, "After off, LED driver thinks a fade is ongoing\n");
-  exit(-1);
-}  
+  led_write_values(3, TEST_DATA);
 
-led_write_fade_target(10, 3, TEST_DATA);
+  for(i = 0; i < ledCount; i++) {
+    led = ledData + i;
+    ledExpectedValues = TEST_DATA + (i * 4);
 
-for(i = 0; i < ledCount; i++) {
-  led = ledData + i;
-  ledExpectedValues = TEST_DATA + (i * 4);
+    if(led->current[0] != ledExpectedValues[0]
+      || led->current[1] != ledExpectedValues[1]
+      || led->current[2] != ledExpectedValues[2]
+      || led->current[3] != ledExpectedValues[3]) {
+      fprintf(stderr, "LED values do not match expected after full write\n");
+      exit(-1);    
+    }
+  }
 
-  if(led->target[0] != ledExpectedValues[0]
-    || led->target[1] != ledExpectedValues[1]
-    || led->target[2] != ledExpectedValues[2]
-    || led->target[3] != ledExpectedValues[3]) {
-    fprintf(stderr, "LED values do not match expected after full write\n");
-  exit(-1);    
-}
-}
+  if(fadeData.fadeTotal != 0) {
+    fprintf(stderr, "After full write, LED driver thinks a fade is ongoing\n");
+    exit(-1);
+  }  
 
-if(fadeData.fadeTotal != 10) {
-  fprintf(stderr, "After write_fade_target, fade duration is wrong\n");
-  exit(-1);
-}  
 
-if(fadeData.fadeComplete != 1) {
-  fprintf(stderr, "After write_fade_target, fade current is wrong\n");
-  exit(-1);
-}  
+  led_off();
+
+  for(i = 0; i < ledCount; i++) {
+    led = ledData + i;
+
+    if(led->current[0] != 0x00
+      || led->current[1] != 0x00
+      || led->current[2] != 0x00
+      || led->current[3] != 0x00) {
+      fprintf(stderr, "LED values do not match expected after off\n");
+    exit(-1);    
+  }
+  }
+
+  if(fadeData.fadeTotal != 0) {
+    fprintf(stderr, "After off, LED driver thinks a fade is ongoing\n");
+    exit(-1);
+  }  
+
+  led_write_fade_target(10, 3, TEST_DATA);
+
+  for(i = 0; i < ledCount; i++) {
+    led = ledData + i;
+    ledExpectedValues = TEST_DATA + (i * 4);
+
+    if(led->target[0] != ledExpectedValues[0]
+      || led->target[1] != ledExpectedValues[1]
+      || led->target[2] != ledExpectedValues[2]
+      || led->target[3] != ledExpectedValues[3]) {
+      fprintf(stderr, "LED values do not match expected after full write\n");
+    exit(-1);    
+  }
+  }
+
+  if(fadeData.fadeTotal != 10) {
+    fprintf(stderr, "After write_fade_target, fade duration is wrong\n");
+    exit(-1);
+  }  
+
+  if(fadeData.fadeComplete != 1) {
+    fprintf(stderr, "After write_fade_target, fade current is wrong\n");
+    exit(-1);
+  }  
 
 }

@@ -76,6 +76,9 @@ void led_fade() {
 
 void led_write_values(uint8_t leds, uint8_t *led_bytes) {
   uint8_t i;
+
+  leds = min(leds, ledCount);
+  
   for(i = 0 ; i < leds ; i++) {
     uint8_t *bytes = led_bytes + (4 * i);
     LED_DATA_T *led = ledData + i;
@@ -88,6 +91,9 @@ void led_write_values(uint8_t leds, uint8_t *led_bytes) {
 
 void led_write_fade_target(uint8_t fade_cycles, uint8_t leds, uint8_t *led_bytes) {
   uint8_t i;
+  
+  leds = min(leds, ledCount);
+
   for(i = 0 ; i < leds ; i++) {
     uint8_t *bytes = led_bytes + (4 * i);
     LED_DATA_T *led = ledData + i;
