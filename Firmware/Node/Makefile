@@ -4,7 +4,7 @@ CFLAGS := -mstm8 --std-c99
 TESTCC := gcc
 TESTLD := gcc
 
-DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel pl9823_driver.rel led_driver.rel
+DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel pl9823_driver.rel led_driver.rel controller.rel
 
 all: board_bring_up.ihx
 
@@ -21,12 +21,12 @@ clean:
 	rm -f *.asm *.ihx *.cdb *.lst *.map *.lk *.rel *.rst *.sym *.o
 
 %.o: %.c
-	$(TESTCC) -c -DDEBUG=1 $<
+	$(TESTCC) -c -DDEBUG=1 -g $<
 
-unitTest: circular_buffer.o circular_buffer_test.o led_driver.o led_driver_test.o pl9823_driver_stub.o solenoid_driver_stub.o controller_test.o
-	$(TESTLD) -o circular_buffer_test circular_buffer.o circular_buffer_test.o
+unitTest: circular_buffer.o circular_buffer_test.o led_driver.o led_driver_test.o pl9823_driver_stub.o solenoid_driver_stub.o controller.o controller_test.o uart_driver_stub.o
+	$(TESTLD) -g -o circular_buffer_test circular_buffer.o circular_buffer_test.o
 	./circular_buffer_test
-	$(TESTLD) -o led_driver_test led_driver.o led_driver_test.o pl9823_driver_stub.o
+	$(TESTLD) -g -o led_driver_test led_driver.o led_driver_test.o pl9823_driver_stub.o
 	./led_driver_test
-	$(TESTLD) -o controller_test led_driver.o pl9823_driver_stub.o solenoid_driver_stub.o
+	$(TESTLD) -g -o controller_test controller_test.o controller.o led_driver.o pl9823_driver_stub.o solenoid_driver_stub.o circular_buffer.o uart_driver_stub.o
 	./controller_test

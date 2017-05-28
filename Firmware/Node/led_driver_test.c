@@ -6,7 +6,7 @@
 #include "led_driver.h"
 
 void printLed(LED_DATA_T *testLed) {
-  fprintf(stdout, "Current: %d %d %d %d\nSource:%d %d %d %d\n Target: %d %d %d %d\n", 
+  fprintf(stdout, "Current: %2x %2x %2x %2x\nSource:%2x %2x %2x %2x\n Target: %2x %2x %2x %2x\n", 
     testLed->current[0], testLed->current[1], testLed->current[2], testLed->current[3],
     testLed->source[0], testLed->source[1], testLed->source[2], testLed->source[3],
     testLed->target[0], testLed->target[1], testLed->target[2], testLed->target[3]
@@ -113,7 +113,8 @@ int main(void) {
     || led->current[2] != 0x00
     || led->current[3] != 0x00) {
     fprintf(stderr, "Too many LEDs written by partial write\n");
-  exit(-1);    
+    printLed(led);
+    exit(-1);    
   }
 
   led_write_values(3, TEST_DATA);

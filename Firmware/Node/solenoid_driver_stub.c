@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 
 uint8_t solenoid_state = -1;

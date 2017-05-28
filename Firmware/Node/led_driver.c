@@ -4,6 +4,8 @@
 #include "led_driver.h"
 #include "pl9823_driver.h"
 
+#define min(a, b) (a > b ? b : a)
+
 uint8_t OFF[] = {0x00, 0x00, 0x00, 0x00};
 
 uint8_t ledCount;

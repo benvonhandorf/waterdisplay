@@ -4,6 +4,7 @@
 #include "uart_driver.h"
 #include "solenoid_driver.h"
 #include "led_driver.h"
+#include "controller.h"
 
 void uart1_tx_isr_handler(void) __interrupt(UART1_TXE_vector) {
   uart1_tx_isr();

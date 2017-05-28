@@ -118,5 +118,29 @@ int main(int argc, char **argv) {
     exit(-1); 
   }
 
+  buffer_init(&circular_buffer);
+
+  buffer_copy_from(&circular_buffer, "A", 1);
+  buffer_copy_from(&circular_buffer, "B", 1);
+  buffer_copy_from(&circular_buffer, "C", 1);
+  buffer_copy_from(&circular_buffer, "D", 1);
+
+  if(buffer_bytes(&circular_buffer) != 4) {
+    fprintf(stderr, "Wrong number of bytes available after partial writes - %d\n", buffer_bytes(&circular_buffer));
+    buffer_dump(&circular_buffer);
+    exit(-1); 
+  }
+
+  buffer_copy_to(&circular_buffer, buffer, 4);
+
+  if(buffer[0] != 'A'
+    || buffer[1] != 'B'
+    || buffer[2] != 'C'
+    || buffer[3] != 'D') {
+    fprintf(stderr, "Data incorrect after partial writes - %d\n", buffer_bytes(&circular_buffer));
+    buffer_dump(&circular_buffer);
+    exit(-1); 
+  }
+
   exit(0);
 }
