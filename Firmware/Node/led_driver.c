@@ -15,6 +15,8 @@ FADE_DATA_T fadeData;
 void led_send_string() {
   uint8_t i;
 
+  pl9823_latch();
+
   for(i = 0; i < ledCount; i++) {
     LED_DATA_T *led = ledData + i;
 

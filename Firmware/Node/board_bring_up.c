@@ -20,7 +20,11 @@ void tim2_capcom(void) __interrupt(TIM2_CAPCOM_vector) {
 
 void tim2_init() {
   //Targeting a 50ms timer
+
+  // TIM2_CCR1H = 0x00;
+  // TIM2_CCR1L = 24;
   
+  // TIM2_PSCR = 
 }
 
 void main() {

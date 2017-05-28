@@ -6,6 +6,10 @@
 #include "circular_buffer.h"
 #include "uart_driver.h"
 
+extern uint8_t ledCount;
+extern LED_DATA_T *ledData = NULL;
+extern FADE_DATA_T fadeData;
+
 CIRCULAR_BUFFER commandBuffer ;
 
 void controller_init() {
