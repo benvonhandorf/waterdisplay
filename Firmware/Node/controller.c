@@ -7,7 +7,7 @@
 #include "uart_driver.h"
 
 extern uint8_t ledCount;
-extern LED_DATA_T *ledData = NULL;
+extern LED_DATA_T *ledData;
 extern FADE_DATA_T fadeData;
 
 CIRCULAR_BUFFER commandBuffer ;
@@ -16,7 +16,7 @@ void controller_init() {
   buffer_init(&commandBuffer);
 }
 
-char parseBuffer[32];
+uint8_t parseBuffer[32];
 
 void controller_dump_state() {
   uart_write("FW: 0.0.1\n", 10);
@@ -27,7 +27,7 @@ void controller_off() {
   led_off();
 }
 
-void controller_add_bytes(char *bytes, uint8_t length) {
+void controller_add_bytes(uint8_t *bytes, uint8_t length) {
   uint8_t availableBytes;
   uint8_t continueParsing = 1;
   buffer_copy_from(&commandBuffer, bytes, length);
@@ -35,7 +35,7 @@ void controller_add_bytes(char *bytes, uint8_t length) {
   availableBytes = buffer_bytes(&commandBuffer);
 
   if(availableBytes > 0) {
-    char *commandStart = parseBuffer;
+    uint8_t *commandStart = parseBuffer;
     availableBytes = buffer_copy_to(&commandBuffer, parseBuffer, 32);
 
     while(availableBytes > 0 && continueParsing) {
@@ -84,6 +84,12 @@ void controller_add_bytes(char *bytes, uint8_t length) {
 
           if(availableBytes >= 2 + (4 * leds)) {
             int bytesInCommand = 2 + (4 * leds);
+            uint8_t i = 0;
+
+            for(i = 2 ; i < bytesInCommand; i++ ) {
+              //Left shift bytes of LED data by 1 bit to handle MSB issues.
+              commandStart[i] = commandStart[i] << 1;
+            }
             //We actually have the necessary number of bytes.  
             led_write_values(leds, commandStart + 2);
 
@@ -104,6 +110,13 @@ void controller_add_bytes(char *bytes, uint8_t length) {
           if(availableBytes >= 3 + (4 * leds)) {
             int bytesInCommand = 3 + (4 * leds);
             int fadeDuration = *(commandStart + 1);
+            uint8_t i = 0;
+
+            for(i = 3 ; i < bytesInCommand; i++ ) {
+              //Left shift bytes of LED data by 1 bit to handle MSB issues.
+              commandStart[i] = commandStart[i] << 1;
+            }
+
             //We actually have the necessary number of bytes.  
             led_write_fade_target(fadeDuration, leds, commandStart + 3);
             

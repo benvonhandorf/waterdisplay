@@ -14,7 +14,7 @@ void buffer_init(CIRCULAR_BUFFER* buffer) {
 	buffer->pos = (uint8_t)0;
 }
 
-uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, char* source, uint8_t len) {
+uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, uint8_t* source, uint8_t len) {
   uint8_t i;
   uint8_t bytesToCopy = len;
 
@@ -34,7 +34,7 @@ uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, char* source, uint8_t le
   return i;
 }
 
-uint8_t buffer_copy_to(CIRCULAR_BUFFER* sourceBuffer, char* target, uint8_t maxLen) {
+uint8_t buffer_copy_to(CIRCULAR_BUFFER* sourceBuffer, uint8_t* target, uint8_t maxLen) {
   uint8_t i;
 
   uint8_t bytesToCopy = maxLen;
