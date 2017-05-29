@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include "stm8s.h"
 
-void uart_init();
+void uart_init(uint8_t address);
 
 void uart1_tx_isr();
 
