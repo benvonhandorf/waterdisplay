@@ -1,6 +1,8 @@
 import os, sys
 import pygame
 import math
+import serial
+
 from pygame.locals import *
 
 if not pygame.font: print("Warning, fonts disabled")
@@ -176,6 +178,8 @@ class PyManMain:
 
 		pygame.display.set_caption('Display Development')
 
+		self.serial = serial.Serial('/dev/ttyUSB1', timeout=0)
+
 		self.clock.tick()
 
 	def drawPond(self):
@@ -186,6 +190,9 @@ class PyManMain:
 	def MainLoop(self):
 		"""This is the Main Loop of the Game"""
 		while 1:
+			serialData = self.serial.read(100)
+			print("Serial:" + str(serialData))
+
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					sys.exit()
@@ -200,6 +207,7 @@ class PyManMain:
 
 			for command in commands:
 				print(" ".join([str(x) for x in command]))
+				self.serial.write([x for x in command])
 
 			for node in self.nodes:
 				node.update(commands, self.clock.get_time())
