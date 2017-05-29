@@ -17,11 +17,10 @@ void uart1_rx_isr_handler(void) __interrupt(UART1_RXF_vector) {
 }
 
 void tim2_isr(void) __interrupt(TIM2_OVF_vector) {
-  //if(TIM2_SR1 & TIM_SR1_UIF){
-    //led_fade();
-    solenoid_active = !solenoid_active;
+  if(TIM2_SR1 & TIM_SR1_UIF){
+    led_fade();
     CLRBIT(TIM2_SR1, TIM_SR1_UIF);
-  //}
+  }
 }
 
 void tim2_init() {
@@ -42,22 +41,17 @@ void main() {
   CLK_DIVR = 0x00;
   CLK_PCKENR1 = 0xFF;
   
-  //uart_init(0x01);
+  uart_init(0x01);
   solenoid_init();
-  // led_init(1);
-  // controller_init();
-
-  solenoid_active = 0;
-  solenoid_write(solenoid_active);
+  led_init(1);
+  controller_init();
 
   tim2_init();
 
   rmi();
 
   while(1) {
-    __asm__("nop");
-    solenoid_write(solenoid_active);
-    // int bytesReceived = uart_read(buffer, 32);
-    // controller_add_bytes(buffer, bytesReceived);
+    int bytesReceived = uart_read(buffer, 32);
+    controller_add_bytes(buffer, bytesReceived);
   }
 }
