@@ -15,8 +15,6 @@ FADE_DATA_T fadeData;
 void led_send_string() {
   uint8_t i;
 
-  pl9823_latch();
-
   for(i = 0; i < ledCount; i++) {
     LED_DATA_T *led = ledData + i;
 
@@ -28,24 +26,16 @@ void led_send_string() {
 }
 
 void led_init(uint8_t led_count) {
-  uint8_t i;
-
   ledCount = led_count;
 
   ledData = (LED_DATA_T *) malloc(sizeof(LED_DATA_T) * ledCount);
 
-  for(i = 0 ; i < ledCount; i++) {
-    LED_DATA_T *led = ledData + i;
-    led->current[0] = 0x00;
-    led->current[1] = 0x00;
-    led->current[2] = 0x00;
-    led->current[3] = 0x00;
-  }
-
   fadeData.fadeTotal = 0;
   fadeData.fadeComplete = 0;
 
-  led_send_string();
+  pl9823_latch(); 
+
+  led_off();
 }
 
 #define FADEVAL(sourceValue, targetValue, portion) (uint8_t) (sourceValue + ((((uint16_t) targetValue) - sourceValue) *portion )/255)
