@@ -19,8 +19,8 @@ void uart_init(uint8_t address) {
   UART1_BRR2 = 0x03;
   UART1_BRR1 = 0x68;
 
-  UART1_CR4 &= 0xF0;
-  UART1_CR4 |= (address & 0x0F);
+  // UART1_CR4 &= 0xF0;
+  // UART1_CR4 |= (address & 0x0F);
 
   SETBIT(UART1_CR2, UART_CR2_TEN);
   SETBIT(UART1_CR2, UART_CR2_REN);
@@ -74,6 +74,21 @@ uint8_t uart_write(char *buffer, uint8_t size) {
 
   return bytesWritten;
 }
+
+uint8_t uart_write_batch(char *buffer, uint8_t size) {
+  uint8_t bytesWritten ;
+
+  bytesWritten = buffer_copy_from(&transmitBuffer, buffer, size);
+
+  return bytesWritten;
+}
+
+uint8_t uart_flush_batch() {
+  SETBIT(UART1_CR2, UART_CR2_TIEN);
+
+  return buffer_bytes(&transmitBuffer);
+}
+
 
 uint8_t uart_bytes_available() {
     return buffer_bytes(&receiveBuffer);

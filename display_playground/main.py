@@ -9,21 +9,21 @@ if not pygame.font: print("Warning, fonts disabled")
 if not pygame.mixer: print("Warning, sound disabled")
 
 class COLORS:
-	BLACK = (  0,   0,   0)
-	WHITE = (255, 255, 255)
-	RED   = (255,   0,   0)
-	PURPLE   = (255,   0,   255)
-	GREEN = (  0, 255,   0)
-	BLUE  = (  0,   0, 255)
-	YELLOW = (255, 255, 0)
-	BLUEGREEN = (0x00, 0x66, 0xff)
-	ORANGE = (255, 153, 51)
+	BLACK = (  0,   0,   0, 0)
+	WHITE = (255, 255, 255, 0)
+	RED   = (255,   0,   0, 0)
+	PURPLE   = (255,   0,   255, 0)
+	GREEN = (  0, 255,   0, 0)
+	BLUE  = (  0,   0, 255, 0)
+	YELLOW = (255, 255, 0, 0)
+	BLUEGREEN = (0x00, 0x66, 0xff, 0)
+	ORANGE = (255, 153, 51, 0)
 
 	def listFromTuple(tuple):
-		return [tuple[0], tuple[1], tuple[2]]
+		return [tuple[0], tuple[1], tuple[2], tuple[3]]
 
 	def tupleFromList(list):
-		return (list[0], list[1], list[2])
+		return (list[0], list[1], list[2], list[3])
 
 	def fadeElement(sourceElement, targetElement, fraction):
 		delta = targetElement - sourceElement
@@ -44,13 +44,13 @@ class SprayerNode:
 
 	def ledCommand(self, command):
 		# command[2] = number of LEDs being addressed.  Assume 1
-		self.ledColor = COLORS.tupleFromList(command[-3:])
+		self.ledColor = COLORS.tupleFromList(command[-4:])
 
 	def fadeLedCommand(self, command):
 		# command[3] = number of LEDs being addressed.  Assume 1
 		self.fadeDurationMs = command[2] * 50
 		self.fadeDurationMsComplete = 0
-		self.targetLedColor = COLORS.tupleFromList(command[-3:])
+		self.targetLedColor = COLORS.tupleFromList(command[-4:])
 		self.sourceLedColor = self.ledColor
 
 	def fadeLed(self, msDelta):
@@ -68,7 +68,8 @@ class SprayerNode:
 
 		self.ledColor = (COLORS.fadeElement(self.sourceLedColor[0], self.targetLedColor[0], fraction),
 			COLORS.fadeElement(self.sourceLedColor[1], self.targetLedColor[1], fraction),
-			COLORS.fadeElement(self.sourceLedColor[2], self.targetLedColor[2], fraction))
+			COLORS.fadeElement(self.sourceLedColor[2], self.targetLedColor[2], fraction),
+			COLORS.fadeElement(self.sourceLedColor[3], self.targetLedColor[3], fraction))
 
 
 	def __init__(self, address, screen, location, angle):
@@ -171,14 +172,14 @@ class PyManMain:
 
 		self.program = DisplayProgram()
 
-		self.nodes = [SprayerNode(1, self.screen, (320+100, 75), 180-45),
-			SprayerNode(2, self.screen, (320, 425), 270),
-			SprayerNode(3, self.screen, (320-100, 75), 45),			
+		self.nodes = [SprayerNode(0x01, self.screen, (320+100, 75), 180-45),
+			SprayerNode(0x02, self.screen, (320, 425), 270),
+			SprayerNode(0x03, self.screen, (320-100, 75), 45),			
 			]
 
 		pygame.display.set_caption('Display Development')
 
-		self.serial = serial.Serial('/dev/ttyUSB1', timeout=0)
+		self.serial = serial.Serial('/dev/ttyUSB0', timeout=0)
 
 		self.clock.tick()
 
@@ -207,7 +208,8 @@ class PyManMain:
 
 			for command in commands:
 				print(" ".join([str(x) for x in command]))
-				self.serial.write([x for x in command])
+				for byte in command:
+					self.serial.write(byte)
 
 			for node in self.nodes:
 				node.update(commands, self.clock.get_time())

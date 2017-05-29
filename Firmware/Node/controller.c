@@ -12,16 +12,18 @@ extern FADE_DATA_T fadeData;
 
 CIRCULAR_BUFFER commandBuffer ;
 
-void controller_init() {
-  buffer_init(&commandBuffer);
-}
-
-uint8_t parseBuffer[32];
 
 void controller_dump_state() {
   uart_write("FW: 0.0.1\n", 10);
 }
 
+void controller_init() {
+  buffer_init(&commandBuffer);
+
+  controller_dump_state();
+}
+
+uint8_t parseBuffer[32];
 void controller_off() {
   solenoid_write(0x00);
   led_off();
@@ -131,8 +133,15 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
           break;
         default:
           //Start of the buffer is a command we don't recognize or a random byte.  We need to move on.
+          uart_write_batch("Unknown:", 8);
+          uart_write_batch(commandStart, 1);
+          uart_write_batch("\n", 1);
+          uart_flush_batch();
+
           availableBytes--;
           commandStart++;
+          buffer_consume(&commandBuffer, 1);
+
           break;
       }
     }
