@@ -22,6 +22,7 @@ uint8_t uart_write(char *buffer, uint8_t size) {
 	}
 
 	fprintf(stdout, "\'\n");
+	return 0;
 }
 
 uint8_t uart_bytes_available() {
@@ -29,5 +30,5 @@ uint8_t uart_bytes_available() {
 }
 
 uint8_t uart_read(char *buffer, uint8_t size) {
-	
+	return 0;
 }

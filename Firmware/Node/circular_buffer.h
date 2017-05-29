@@ -9,9 +9,9 @@ typedef struct {
 
 void buffer_init(CIRCULAR_BUFFER* buffer);
 
-uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, char *source, uint8_t len);
+uint8_t buffer_copy_from(CIRCULAR_BUFFER* targetBuffer, uint8_t *source, uint8_t len);
 
-uint8_t buffer_copy_to(CIRCULAR_BUFFER* sourceBuffer, char *target, uint8_t maxLen);
+uint8_t buffer_copy_to(CIRCULAR_BUFFER* sourceBuffer, uint8_t *target, uint8_t maxLen);
 
 uint8_t buffer_consume(CIRCULAR_BUFFER *buffer, uint8_t bytes);
 

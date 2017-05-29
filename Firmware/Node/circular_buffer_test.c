@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
   int sourceLen = strlen(buffer);
 
-  int result = buffer_copy_from(&circular_buffer, buffer, sourceLen);
+  int result = buffer_copy_from(&circular_buffer, (uint8_t *)buffer, sourceLen);
 
   if(result != sourceLen) {
     fprintf(stderr, "Copied fewer bytes than provided - sourceLen %d - result %d\n", sourceLen, result);
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
-  int result2 = buffer_copy_to(&circular_buffer, secondBuffer, 64);
+  int result2 = buffer_copy_to(&circular_buffer, (uint8_t *)secondBuffer, 64);
 
   if(result != result2) {
     fprintf(stderr, "Bytes copied into and out of buffer are not equal - %d - %d\n", result, result2);
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
-  int result_copy_to_when_consumed = buffer_copy_to(&circular_buffer, buffer, 64);
+  int result_copy_to_when_consumed = buffer_copy_to(&circular_buffer, (uint8_t *)buffer, 64);
 
   if(result_copy_to_when_consumed != 0) {
     fprintf(stderr, "Bytes were copied after all should have been consumed - %d\n", result_copy_to_when_consumed);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
   memset(secondBuffer, 0x00, 64);
   strncpy(buffer, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 64);
 
-  int result_copy_with_wrap = buffer_copy_from(&circular_buffer, buffer, 64);
+  int result_copy_with_wrap = buffer_copy_from(&circular_buffer, (uint8_t *)buffer, 64);
 
   if(result_copy_with_wrap != 32) {
     fprintf(stderr, "Bytes were copied even after buffer was full - %d\n", result_copy_with_wrap);
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
-  int result_copy_to_when_full = buffer_copy_to(&circular_buffer, secondBuffer, 64);
+  int result_copy_to_when_full = buffer_copy_to(&circular_buffer, (uint8_t *)secondBuffer, 64);
 
   if(result_copy_to_when_full != result_copy_with_wrap) {
     fprintf(stderr, "Fewer bytes copied out than in - %d - %d\n", result_copy_to_when_full, result_copy_with_wrap);
@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
     exit(-1);   
   }
 
-  int result_copy_to_when_slightly_drained = buffer_copy_to(&circular_buffer, secondBuffer, 64);
+  int result_copy_to_when_slightly_drained = buffer_copy_to(&circular_buffer, (uint8_t *)secondBuffer, 64);
 
   if(result_copy_to_when_slightly_drained != result_copy_with_wrap - 5) {
     fprintf(stderr, "Wrong bytes copied out after partial consumption - %d - %d\n", result_copy_to_when_slightly_drained, result_copy_with_wrap - 5);
@@ -120,10 +120,10 @@ int main(int argc, char **argv) {
 
   buffer_init(&circular_buffer);
 
-  buffer_copy_from(&circular_buffer, "A", 1);
-  buffer_copy_from(&circular_buffer, "B", 1);
-  buffer_copy_from(&circular_buffer, "C", 1);
-  buffer_copy_from(&circular_buffer, "D", 1);
+  buffer_copy_from(&circular_buffer, (uint8_t *)"A", 1);
+  buffer_copy_from(&circular_buffer, (uint8_t *)"B", 1);
+  buffer_copy_from(&circular_buffer, (uint8_t *)"C", 1);
+  buffer_copy_from(&circular_buffer, (uint8_t *)"D", 1);
 
   if(buffer_bytes(&circular_buffer) != 4) {
     fprintf(stderr, "Wrong number of bytes available after partial writes - %d\n", buffer_bytes(&circular_buffer));
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
     exit(-1); 
   }
 
-  buffer_copy_to(&circular_buffer, buffer, 4);
+  buffer_copy_to(&circular_buffer, (uint8_t *)buffer, 4);
 
   if(buffer[0] != 'A'
     || buffer[1] != 'B'

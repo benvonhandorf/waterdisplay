@@ -8,7 +8,7 @@
 static CIRCULAR_BUFFER receiveBuffer;
 static CIRCULAR_BUFFER transmitBuffer;
 
-void uart_init() {
+void uart_init(uint8_t address) {
   CLRBIT(UART1_CR1, UART_CR1_UARTD);
   CLRBIT(UART1_CR1, UART_CR1_M);
   
@@ -19,9 +19,16 @@ void uart_init() {
   UART1_BRR2 = 0x03;
   UART1_BRR1 = 0x68;
 
+  UART1_CR4 &= 0xF0;
+  UART1_CR4 |= (address & 0x0F);
+
   SETBIT(UART1_CR2, UART_CR2_TEN);
   SETBIT(UART1_CR2, UART_CR2_REN);
   SETBIT(UART1_CR2, UART_CR2_RIEN);
+
+  if(address > 0) {
+    SETBIT(UART1_CR2, UART_CR2_RWU);
+  }
 
   buffer_init(&receiveBuffer);
   buffer_init(&transmitBuffer);
