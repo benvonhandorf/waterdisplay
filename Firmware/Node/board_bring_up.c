@@ -20,16 +20,16 @@ void tim2_isr(void) __interrupt(TIM2_OVF_vector) {
   //if(TIM2_SR1 & TIM_SR1_UIF){
     //led_fade();
     solenoid_active = !solenoid_active;
+    CLRBIT(TIM2_SR1, TIM_SR1_UIF);
   //}
 }
 
 void tim2_init() {
   //Targeting a 50ms timer
+  TIM2_PSCR = 0x0F; //Prescaler = 2 ^ 15
 
   TIM2_ARRH = 0x00;
   TIM2_ARRL = 24;//////24;
-  
-  TIM2_PSCR = 0x0F; //Prescaler = 2 ^ 15
 
   SETBIT(TIM2_IER, TIM_IER_UIE);
   SETBIT(TIM2_CR1, TIM_CR1_CEN);
@@ -37,20 +37,17 @@ void tim2_init() {
 
 void main() {
   char buffer[32];
-  int i = 0;
-  int j = 0;
-  uint8_t solenoid_active = 0;
   uint8_t bytesReceived = 0;
 
   CLK_DIVR = 0x00;
   CLK_PCKENR1 = 0xFF;
   
-  uart_init(0x01);
+  //uart_init(0x01);
   solenoid_init();
-  led_init(1);
-  controller_init();
+  // led_init(1);
+  // controller_init();
 
-  solenoid_active = 1;
+  solenoid_active = 0;
   solenoid_write(solenoid_active);
 
   tim2_init();
