@@ -33,6 +33,8 @@ void led_init(uint8_t led_count) {
   fadeData.fadeTotal = 0;
   fadeData.fadeComplete = 0;
 
+  pl9823_init();
+
   pl9823_latch(); 
 
   led_off();

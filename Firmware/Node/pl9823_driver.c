@@ -65,8 +65,6 @@ void pl9823_init() {
   SETBIT(LED_PORT_DDR, LED_BIT_MASK);
   SETBIT(LED_PORT_CR1, LED_BIT_MASK);
   CLRBIT(LED_PORT_ODR, LED_BIT_MASK);
-
-  sendReset();
 }
 
 void pl9823_write_led(uint8_t *bytes) {

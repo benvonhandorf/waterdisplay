@@ -34,6 +34,8 @@ void tim2_init() {
   SETBIT(TIM2_CR1, TIM_CR1_CEN);
 }
 
+uint8_t RED[] = {0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00};
+
 void main() {
   char buffer[32];
   uint8_t bytesReceived = 0;
