@@ -27,12 +27,11 @@ void tim2_init() {
   //Targeting a 50ms timer
 
   TIM2_ARRH = 0x00;
-  TIM2_ARRL = 200;//////24;
+  TIM2_ARRL = 24;//////24;
   
-  TIM2_PSCR = 0x08; //Prescaler = 2 ^ 15
+  TIM2_PSCR = 0x0F; //Prescaler = 2 ^ 15
 
   SETBIT(TIM2_IER, TIM_IER_UIE);
-
   SETBIT(TIM2_CR1, TIM_CR1_CEN);
 }
 
