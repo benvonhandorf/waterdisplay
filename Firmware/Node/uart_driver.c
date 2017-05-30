@@ -7,6 +7,7 @@
 
 static CIRCULAR_BUFFER receiveBuffer;
 static CIRCULAR_BUFFER transmitBuffer;
+uint8_t nodeAddress;
 
 void uart_init(uint8_t address) {
   CLRBIT(UART1_CR1, UART_CR1_UARTD);
@@ -19,14 +20,17 @@ void uart_init(uint8_t address) {
   UART1_BRR2 = 0x03;
   UART1_BRR1 = 0x68;
 
-  // UART1_CR4 &= 0xF0;
-  // UART1_CR4 |= (address & 0x0F);
+  UART1_CR4 &= 0xF0;
+  UART1_CR4 |= (address & 0x0F);
 
   SETBIT(UART1_CR2, UART_CR2_TEN);
   SETBIT(UART1_CR2, UART_CR2_REN);
   SETBIT(UART1_CR2, UART_CR2_RIEN);
 
+  nodeAddress = address;
+
   if(address > 0) {
+    SETBIT(UART1_CR1, UART_CR1_WAKE);
     SETBIT(UART1_CR2, UART_CR2_RWU);
   }
 
@@ -61,7 +65,10 @@ void uart1_rx_isr() {
     char dataByte = UART1_DR;
     uint8_t bytesCopied;
 
-    bytesCopied = buffer_copy_from(&receiveBuffer, &dataByte, 1);
+    if(nodeAddress == 0
+        || dataByte != (0x80 | nodeAddress)) {
+      bytesCopied = buffer_copy_from(&receiveBuffer, &dataByte, 1);
+    }
   }
 }
 

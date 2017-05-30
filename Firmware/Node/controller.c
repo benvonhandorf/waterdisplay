@@ -41,7 +41,7 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
     availableBytes = buffer_copy_to(&commandBuffer, parseBuffer, 32);
 
     while(availableBytes > 0 && continueParsing) {
-      uint8_t leds = 1; //We will have AT LEAST 1 LED
+      uint8_t leds = 1; //We will have AT LEAST 1 LED for any LED command
 
       switch(*commandStart) {
         case 'D':

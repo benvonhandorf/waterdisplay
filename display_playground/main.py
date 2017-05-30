@@ -8,16 +8,19 @@ from pygame.locals import *
 if not pygame.font: print("Warning, fonts disabled")
 if not pygame.mixer: print("Warning, sound disabled")
 
+SERIAL = "/dev/tty.usbserial-00001014"
+# SERIAL = "/dev/ttyUSB0"
+
 class COLORS:
 	BLACK = (  0,   0,   0, 0)
-	WHITE = (255, 255, 255, 0)
-	RED   = (255,   0,   0, 0)
-	PURPLE   = (255,   0,   255, 0)
-	GREEN = (  0, 255,   0, 0)
-	BLUE  = (  0,   0, 255, 0)
-	YELLOW = (255, 255, 0, 0)
-	BLUEGREEN = (0x00, 0x66, 0xff, 0)
-	ORANGE = (255, 153, 51, 0)
+	WHITE = (0x7F, 0x7F, 0x7F, 0)
+	RED   = (0x7F,   0,   0, 0)
+	PURPLE   = (0x7F,   0,   0x7F, 0)
+	GREEN = (  0, 0x7F,   0, 0)
+	BLUE  = (  0,   0, 0x7F, 0)
+	YELLOW = (0x7F, 0x7F, 0, 0)
+	BLUEGREEN = (0x00, 0x66, 0x7f, 0)
+	ORANGE = (0x7F, 0x79, 0x33, 0)
 
 	def listFromTuple(tuple):
 		return [tuple[0], tuple[1], tuple[2], tuple[3]]
@@ -90,7 +93,7 @@ class SprayerNode:
 
 	def processCommand(self, command):
 		if command[0] & 0x0F == self.address:
-			commandByte = command[1].decode(encoding='UTF-8')
+			commandByte = chr(command[1])
 			commandProcessor = self.commands[commandByte]
 
 			commandProcessor(command)
@@ -121,11 +124,12 @@ class DisplayProgram:
 		self.colorPosition = 0
 
 	def commandFor(address, command, data):
-		result = [0x80 | address]
+		result = bytearray()
 
-		result.append(command)
-		for byte in data:
-			result.append(byte)
+		result.append(0x80 | address)
+
+		result.extend(command)
+		result.extend(data)
 
 		return result
 
@@ -139,15 +143,15 @@ class DisplayProgram:
 
 		if(self.timeToNextCommand <= 0):
 			self.timeToNextCommand = 1000
-			result.append(DisplayProgram.commandFor(self.addressFor(self.nodeSpraying, 0), 'F'.encode(encoding='UTF-8'), []))
+			result.append(DisplayProgram.commandFor(self.addressFor(self.nodeSpraying, 0), 'F'.encode(), []))
 			self.nodeSpraying = self.nodeSpraying + 1
 			if self.nodeSpraying >= self.nodeCount:
 				self.nodeSpraying = 0
 
 			for offset in range(0, 2) :
 				address = self.addressFor(self.nodeSpraying, offset)
-				result.append(DisplayProgram.commandFor(address, 'l'.encode(encoding='UTF-8'), [0x10] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
-				result.append(DisplayProgram.commandFor(address, 'S'.encode(encoding='UTF-8'), [0x01]))
+				result.append(DisplayProgram.commandFor(address, 'l'.encode(), [0x10] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
+				result.append(DisplayProgram.commandFor(address, 'S'.encode(), [0x01]))
 				self.colorPosition = (self.colorPosition + 1) % len(self.colorSet)
 
 		return result
@@ -179,7 +183,11 @@ class PyManMain:
 
 		pygame.display.set_caption('Display Development')
 
-		self.serial = serial.Serial('/dev/ttyUSB0', timeout=0)
+		try:
+		  SERIAL
+		  self.serial = serial.Serial(SERIAL, timeout=0)
+		except NameError:
+		  self.serial = None
 
 		self.clock.tick()
 
@@ -191,8 +199,9 @@ class PyManMain:
 	def MainLoop(self):
 		"""This is the Main Loop of the Game"""
 		while 1:
-			serialData = self.serial.read(100)
-			print("Serial:" + str(serialData))
+			if self.serial is not None:
+				serialData = self.serial.read(100)
+				print("Serial:" + str(serialData))
 
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -207,9 +216,12 @@ class PyManMain:
 			commands = self.program.update(self.clock.get_time())
 
 			for command in commands:
-				print(" ".join([str(x) for x in command]))
-				for byte in command:
-					self.serial.write(byte)
+				print(command)
+				if self.serial is not None:
+					self.serial.write(command)
+				if self.serial is not None:
+					serialData = self.serial.read(100)
+					print("Serial:" + str(serialData))
 
 			for node in self.nodes:
 				node.update(commands, self.clock.get_time())

@@ -8,6 +8,10 @@
 
 volatile uint8_t solenoid_active = 0;
 
+#ifndef NODE_ADDRESS
+#define NODE_ADDRESS 0x01
+#endif
+
 void uart1_tx_isr_handler(void) __interrupt(UART1_TXE_vector) {
   uart1_tx_isr();
 }
@@ -43,7 +47,7 @@ void main() {
   CLK_DIVR = 0x00;
   CLK_PCKENR1 = 0xFF;
   
-  uart_init(0x01);
+  uart_init(NODE_ADDRESS);
   solenoid_init();
   led_init(1);
   controller_init();
@@ -54,6 +58,9 @@ void main() {
 
   while(1) {
     int bytesReceived = uart_read(buffer, 32);
+    if(bytesReceived > 0) {
+      solenoid_write(1);
+    }
     controller_add_bytes(buffer, bytesReceived);
   }
 }
