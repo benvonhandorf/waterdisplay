@@ -118,7 +118,7 @@ class SprayerNode:
 class DisplayProgram:
 	def __init__(self):
 		self.timeToNextCommand = 0
-		self.nodeCount = 3
+		self.nodeCount = 1
 		self.nodeSpraying = 0
 		self.colorSet = [COLORS.RED, COLORS.GREEN, COLORS.BLUE, COLORS.PURPLE, COLORS.YELLOW, COLORS.BLUEGREEN, COLORS.ORANGE]
 		self.colorPosition = 0
@@ -142,15 +142,15 @@ class DisplayProgram:
 		self.timeToNextCommand = self.timeToNextCommand - msDelta
 
 		if(self.timeToNextCommand <= 0):
-			self.timeToNextCommand = 1000
-			result.append(DisplayProgram.commandFor(self.addressFor(self.nodeSpraying, 0), 'F'.encode(), []))
+			self.timeToNextCommand = 10000
+
 			self.nodeSpraying = self.nodeSpraying + 1
 			if self.nodeSpraying >= self.nodeCount:
 				self.nodeSpraying = 0
 
 			for offset in range(0, 2) :
 				address = self.addressFor(self.nodeSpraying, offset)
-				result.append(DisplayProgram.commandFor(address, 'l'.encode(), [0x10] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
+				result.append(DisplayProgram.commandFor(address, 'l'.encode(), [0x7F] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
 				result.append(DisplayProgram.commandFor(address, 'S'.encode(), [0x01]))
 				self.colorPosition = (self.colorPosition + 1) % len(self.colorSet)
 
@@ -176,9 +176,7 @@ class PyManMain:
 
 		self.program = DisplayProgram()
 
-		self.nodes = [SprayerNode(0x01, self.screen, (320+100, 75), 180-45),
-			SprayerNode(0x02, self.screen, (320, 425), 270),
-			SprayerNode(0x03, self.screen, (320-100, 75), 45),			
+		self.nodes = [SprayerNode(0x01, self.screen, (320+100, 75), 180-45)
 			]
 
 		pygame.display.set_caption('Display Development')

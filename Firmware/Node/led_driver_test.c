@@ -56,6 +56,11 @@ int main(void) {
   testLed.target[1] = 0xFF;
   testLed.target[2] = 0x00;
   testLed.target[3] = 0x00;
+  
+  for(i = 0; i < 255; i++) {
+    led_fade_single(&testLed, i);
+    printLed(&testLed);
+  }
 
   led_fade_single(&testLed, 0);
 

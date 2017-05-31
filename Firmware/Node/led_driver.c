@@ -68,6 +68,10 @@ void led_fade() {
   }
 
   led_send_string();
+
+  if(fadeData.fadeComplete >= fadeData.fadeTotal) {
+    fadeData.fadeTotal = 0;
+  }
 }
 
 void led_write_values(uint8_t leds, uint8_t *led_bytes) {
@@ -99,6 +103,7 @@ void led_write_fade_target(uint8_t fade_cycles, uint8_t leds, uint8_t *led_bytes
   }
 
   fadeData.fadeTotal = fade_cycles;
+  fadeData.fadeComplete = 0;
   led_fade();
 }
 
