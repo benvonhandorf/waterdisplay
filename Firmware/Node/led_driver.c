@@ -59,7 +59,7 @@ void led_fade() {
 
   fadeData.fadeComplete += 1; //Expect this to be called every ~50 ms
 
-  fadePortion = (((uint16_t) fadeData.fadeTotal) * 255) / fadeData.fadeComplete;
+  fadePortion = (((uint16_t) fadeData.fadeComplete) * 255) / fadeData.fadeTotal;
 
   for(i = 0 ; i < ledCount; i++) {
     LED_DATA_T *led = ledData + i;
