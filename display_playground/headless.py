@@ -114,7 +114,8 @@ class DisplayProgram:
 		if(self.timeToNextCommand <= 0):
 			self.timeToNextCommand = 5000
 			
-			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'F'.encode(), []))
+			# result.append(DisplayProgram.commandFor(self.nodeSpraying, 'F'.encode(), []))
+			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'l'.encode(), [0x10] + [0x01] + COLORS.listFromTuple(COLORS.BLACK)))
 
 			self.nodeSpraying = self.nodeSpraying + 1
 			if self.nodeSpraying >= self.nodeCount:
@@ -122,7 +123,7 @@ class DisplayProgram:
 
 			for offset in range(0, 1) :
 				address = self.addressFor(self.nodeSpraying, offset)
-				result.append(DisplayProgram.commandFor(address, 'l'.encode(), [0x7F] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
+				result.append(DisplayProgram.commandFor(address, 'l'.encode(), [0x10] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
 				result.append(DisplayProgram.commandFor(address, 'S'.encode(), [0x01]))
 				self.colorPosition = (self.colorPosition + 1) % len(self.colorSet)
 
