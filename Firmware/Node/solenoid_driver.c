@@ -20,12 +20,19 @@
 
 #endif
 
+uint8_t solenoid_state_internal;
+
+uint8_t solenoid_state() {
+  return solenoid_state_internal;
+}
+
 void solenoid_init() {
   SETBIT(SOLENOID_PORT_DDR, SOLENOID_BIT_MASK);
   SETBIT(SOLENOID_PORT_CR1, SOLENOID_BIT_MASK);
 }
 
 void solenoid_write(uint8_t active) {
+  solenoid_state_internal = active;
   if(active) {
     SETBIT(SOLENOID_PORT_ODR, SOLENOID_BIT_MASK);
   } else {

@@ -5,6 +5,12 @@
 #include "led_driver.h"
 #include "circular_buffer.h"
 #include "uart_driver.h"
+#include <stdio.h> 
+#include <string.h> 
+
+#ifndef FIRMWARE_VERSION
+#define FIRMWARE_VERSION "0.0.2"
+#endif
 
 extern uint8_t ledCount;
 extern LED_DATA_T *ledData;
@@ -14,7 +20,20 @@ CIRCULAR_BUFFER commandBuffer ;
 
 
 void controller_dump_state() {
-  uart_write("FW: 0.0.1\n", 10);
+  char buffer[10];
+  uart_write("V:", 2);
+  uart_write(FIRMWARE_VERSION, strlen(FIRMWARE_VERSION));
+  uart_write("\n", 1);
+  sprintf(buffer, "A:%2x\n", uart_address());
+  uart_write(buffer, strlen(buffer));
+  sprintf(buffer, "S:%2x\n", solenoid_state());
+  uart_write(buffer, strlen(buffer));
+  sprintf(buffer, "L:%u\n", ledCount);
+  uart_write(buffer, strlen(buffer));
+  if(ledCount > 0) {
+    sprintf(buffer, "E:%02x%02x%02x\n", ledData[0].current[0], ledData[0].current[1], ledData[0].current[2]);
+    uart_write(buffer, strlen(buffer));
+  }
 }
 
 void controller_init() {
