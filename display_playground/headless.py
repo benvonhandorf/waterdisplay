@@ -1,6 +1,7 @@
 import os, sys
 import math
 import serial
+import time
 
 
 # SERIAL = "/dev/tty.usbserial-00001014"
@@ -34,18 +35,20 @@ class SprayerNode:
 
 	def solenoidCommand(self, command):
 		self.spraying = command[2] > 0
-		if(self.spraying) {
-			print(self.address + " - Sprayer On")
-		}
+		if self.spraying :
+			print(str(self.address) + " - Sprayer On")
+		else:
+			print(str(self.address) + " - Sprayer Off")
+		
 
 	def offCommand(self, command):
-		print(self.address + " - OFF")
+		print(str(self.address) + " - OFF")
 
 	def ledCommand(self, command):
 		# command[2] = number of LEDs being addressed.  Assume 1
 		self.ledColor = COLORS.tupleFromList(command[-4:])
 
-		print(self.address + " - LED Color : " + self.ledColor)
+		print(str(self.address) + " - LED Color : " + str(self.ledColor))
 
 	def fadeLedCommand(self, command):
 		# command[3] = number of LEDs being addressed.  Assume 1
@@ -54,11 +57,10 @@ class SprayerNode:
 		self.targetLedColor = COLORS.tupleFromList(command[-4:])
 		self.sourceLedColor = self.ledColor
 
-		print(self.address + " - Fade to : " + self.ledColor + " over " + self.fadeDurationMs + "ms")
+		print(str(self.address) + " - Fade to : " + str(self.ledColor) + " over " + str(self.fadeDurationMs) + "ms")
 
-	def __init__(self, address, screen, location, angle):
+	def __init__(self, address, location, angle):
 		self.address = address
-		self.screen = screen
 		self.location = location
 		self.angle = angle
 		self.spraying = False
@@ -86,7 +88,7 @@ class SprayerNode:
 class DisplayProgram:
 	def __init__(self):
 		self.timeToNextCommand = 0
-		self.nodeCount = 1
+		self.nodeCount = 3
 		self.nodeSpraying = 0
 		self.colorSet = [COLORS.RED, COLORS.GREEN, COLORS.BLUE, COLORS.PURPLE, COLORS.YELLOW, COLORS.BLUEGREEN, COLORS.ORANGE]
 		self.colorPosition = 0
@@ -110,13 +112,15 @@ class DisplayProgram:
 		self.timeToNextCommand = self.timeToNextCommand - msDelta
 
 		if(self.timeToNextCommand <= 0):
-			self.timeToNextCommand = 10000
+			self.timeToNextCommand = 5000
+			
+			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'F'.encode(), []))
 
 			self.nodeSpraying = self.nodeSpraying + 1
 			if self.nodeSpraying >= self.nodeCount:
 				self.nodeSpraying = 0
 
-			for offset in range(0, 2) :
+			for offset in range(0, 1) :
 				address = self.addressFor(self.nodeSpraying, offset)
 				result.append(DisplayProgram.commandFor(address, 'l'.encode(), [0x7F] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
 				result.append(DisplayProgram.commandFor(address, 'S'.encode(), [0x01]))
@@ -129,11 +133,11 @@ class PyManMain:
 	initialization and creating of the Game."""
 
 	def __init__(self):
-		self.clock = pygame.time.Clock()
+		self.lastTime = time.clock()*1000
 
 		self.program = DisplayProgram()
 
-		self.nodes = [SprayerNode(0x01, self.screen, (320+100, 75), 180-45)]
+		self.nodes = [SprayerNode(0x01,(320+100, 75), 180-45)]
 
 		try:
 		  SERIAL
@@ -141,19 +145,20 @@ class PyManMain:
 		except NameError:
 		  self.serial = None
 
-		self.clock.tick()
-
 	def readSerial(self):
 		if self.serial is not None:
 			serialData = self.serial.read(100)
-			print("Serial:" + str(serialData))
+			if serialData is not None and len(serialData) > 0:
+				print("Serial:" + str(serialData))
 
 
 	def MainLoop(self):
 		while 1:
-			self.clock.tick()
+			newTime = time.clock() * 1000
+			delta = newTime - self.lastTime
+			self.lastTime = newTime
 
-			commands = self.program.update(self.clock.get_time())
+			commands = self.program.update(delta)
 
 			for command in commands:
 				print(command)
@@ -163,7 +168,7 @@ class PyManMain:
 			self.readSerial()
 
 			for node in self.nodes:
-				node.update(commands, self.clock.get_time())
+				node.update(commands, delta)
 
 if __name__ == "__main__":
 	MainWindow = PyManMain()
