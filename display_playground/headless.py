@@ -57,7 +57,7 @@ class SprayerNode:
 		self.targetLedColor = COLORS.tupleFromList(command[-4:])
 		self.sourceLedColor = self.ledColor
 
-		print(str(self.address) + " - Fade to : " + str(self.ledColor) + " over " + str(self.fadeDurationMs) + "ms")
+		print(str(self.address) + " - Fade to : " + str(self.targetLedColor) + " over " + str(self.fadeDurationMs) + "ms")
 
 	def __init__(self, address, location, angle):
 		self.address = address
@@ -116,6 +116,7 @@ class DisplayProgram:
 			
 			# result.append(DisplayProgram.commandFor(self.nodeSpraying, 'F'.encode(), []))
 			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'l'.encode(), [0x10] + [0x01] + COLORS.listFromTuple(COLORS.BLACK)))
+			result.append(DisplayProgram.commandFor(self.nodeSpraying, 'S'.encode(), [0x00]))
 
 			self.nodeSpraying = self.nodeSpraying + 1
 			if self.nodeSpraying >= self.nodeCount:
