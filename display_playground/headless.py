@@ -144,6 +144,7 @@ class PyManMain:
 		try:
 		  SERIAL
 		  self.serial = serial.Serial(SERIAL, timeout=0)
+                  self.serial.nonblocking()
 		except NameError:
 		  self.serial = None
 
