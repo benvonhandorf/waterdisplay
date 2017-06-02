@@ -3,6 +3,8 @@
 
 void uart_init(uint8_t address);
 
+uint8_t uart_address();
+
 void uart1_tx_isr();
 
 void uart1_rx_isr();

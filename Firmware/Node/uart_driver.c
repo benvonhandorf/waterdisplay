@@ -38,6 +38,10 @@ void uart_init(uint8_t address) {
   buffer_init(&transmitBuffer);
 }
 
+uint8_t uart_address() {
+  return nodeAddress;
+}
+
 uint8_t txByte() {
   char dataByte;
   uint8_t bytesCopied = buffer_copy_to(&transmitBuffer, &dataByte, 1);
