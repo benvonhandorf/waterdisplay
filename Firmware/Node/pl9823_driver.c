@@ -3,6 +3,7 @@
 #include "pl9823_driver.h"
 #include "stm8s.h"
 #include "stm_util.h"
+#include "uart_driver.h"
 
 #define LED_PORT_DDR PC_DDR
 #define LED_PORT_CR1 PC_CR1

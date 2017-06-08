@@ -1,15 +1,15 @@
-// #include <stdio.h>
-// #include <string.h>
+#include <stdint.h>
 #include "controller.h"
 #include "solenoid_driver.h"
 #include "led_driver.h"
 #include "circular_buffer.h"
 #include "uart_driver.h"
 #include <stdio.h> 
-#include <string.h> 
+#include <string.h>
+#include "configuration.h" 
 
 #ifndef FIRMWARE_VERSION
-#define FIRMWARE_VERSION "0.0.2"
+#define FIRMWARE_VERSION "0.0.3"
 #endif
 
 extern uint8_t ledCount;
@@ -106,11 +106,14 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
           if(availableBytes >= 2 + (4 * leds)) {
             int bytesInCommand = 2 + (4 * leds);
             uint8_t i = 0;
-
+  
             for(i = 2 ; i < bytesInCommand; i++ ) {
               //Left shift bytes of LED data by 1 bit to handle MSB issues.
               commandStart[i] = commandStart[i] << 1;
             }
+
+  
+
             //We actually have the necessary number of bytes.  
             led_write_values(leds, commandStart + 2);
 
@@ -145,6 +148,30 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
             availableBytes -= bytesInCommand;
             commandStart += bytesInCommand;
             buffer_consume(&commandBuffer, bytesInCommand);
+          } else {
+            continueParsing = 0;
+          }
+
+          break;
+        case 'A':
+          if(availableBytes >= 2) {
+            uint8_t proposedAddress = *(commandStart + 1);
+
+            availableBytes -= 2;
+            commandStart += 2;
+            buffer_consume(&commandBuffer, 2);
+
+            if(proposedAddress == 0
+              || proposedAddress > 0x0F) {
+              uart_write("Invalid address\n", 16);
+              continue;
+            } else {
+              proposedAddress = configuration_set(CNF_ADDR, proposedAddress);
+              uart_write_batch("New Addr: ", 10);
+              uart_write_batch(&proposedAddress, 1);
+              uart_write_batch("\n", 1);
+              uart_flush_batch();
+            }
           } else {
             continueParsing = 0;
           }

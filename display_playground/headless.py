@@ -5,7 +5,7 @@ import time
 
 
 # SERIAL = "/dev/tty.usbserial-00001014"
-SERIAL = "/dev/ttyAMA0"
+# SERIAL = "/dev/ttyAMA0"
 
 class COLORS:
   BLACK = (  0,   0,   0, 0)

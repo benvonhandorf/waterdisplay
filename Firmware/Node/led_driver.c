@@ -61,17 +61,22 @@ void led_fade() {
 
   fadePortion = (((uint16_t) fadeData.fadeComplete) * 255) / fadeData.fadeTotal;
 
-  for(i = 0 ; i < ledCount; i++) {
-    LED_DATA_T *led = ledData + i;
+  if(fadeData.fadeComplete >= fadeData.fadeTotal) {
+    fadeData.fadeTotal = 0;
+    for(i = 0 ; i < ledCount; i++) {
+      LED_DATA_T *led = ledData + i;
+      
+      memcpy(&led->current, &led->target, 4);
+    }
+  } else {
+    for(i = 0 ; i < ledCount; i++) {
+      LED_DATA_T *led = ledData + i;
 
-    led_fade_single(led, fadePortion);
+      led_fade_single(led, fadePortion);
+    }
   }
 
   led_send_string();
-
-  if(fadeData.fadeComplete >= fadeData.fadeTotal) {
-    fadeData.fadeTotal = 0;
-  }
 }
 
 void led_write_values(uint8_t leds, uint8_t *led_bytes) {
