@@ -2,32 +2,13 @@ import os, sys
 import math
 import serial
 import time
+from colors import COLORS
+#from simple_display_program import SimpleDisplayProgram
+from image_parser_program import ImageParserProgram
 
 
 # SERIAL = "/dev/tty.usbserial-00001014"
 # SERIAL = "/dev/ttyAMA0"
-
-class COLORS:
-  BLACK = (  0,   0,   0, 0)
-  WHITE = (0x7F, 0x7F, 0x7F, 0)
-  RED   = (0x7F,   0,   0, 0)
-  PURPLE   = (0x7F,   0,   0x7F, 0)
-  GREEN = (  0, 0x7F,   0, 0)
-  BLUE  = (  0,   0, 0x7F, 0)
-  YELLOW = (0x7F, 0x7F, 0, 0)
-  BLUEGREEN = (0x00, 0x66, 0x7f, 0)
-  ORANGE = (0x7F, 0x79, 0x33, 0)
-
-  def listFromTuple(tuple):
-    return [tuple[0], tuple[1], tuple[2], tuple[3]]
-
-  def tupleFromList(list):
-    return (list[0], list[1], list[2], list[3])
-
-  def fadeElement(sourceElement, targetElement, fraction):
-    delta = targetElement - sourceElement
-
-    return sourceElement + (fraction * delta)
 
 class SprayerNode:
   RADIUS = 20
@@ -85,50 +66,7 @@ class SprayerNode:
     for command in commands:
       self.processCommand(command)
 
-class DisplayProgram:
-  def __init__(self):
-    self.timeToNextCommand = 0
-    self.nodeCount = 3
-    self.nodeSpraying = 0
-    self.colorSet = [COLORS.RED, COLORS.GREEN, COLORS.BLUE, COLORS.PURPLE, COLORS.YELLOW, COLORS.BLUEGREEN, COLORS.ORANGE]
-    self.colorPosition = 0
 
-  def commandFor(address, command, data):
-    result = bytearray()
-
-    result.append(0x80 | address)
-
-    result.extend(command)
-    result.extend(data)
-
-    return result
-
-  def addressFor(self, startingNode, offset):
-    return (( startingNode + offset ) % self.nodeCount ) + 1
-
-  def update(self, msDelta):
-    result = []
-
-    self.timeToNextCommand = self.timeToNextCommand - msDelta
-
-    if(self.timeToNextCommand <= 0):
-      self.timeToNextCommand = 5000
-      
-      # result.append(DisplayProgram.commandFor(self.nodeSpraying, 'F'.encode(), []))
-      result.append(DisplayProgram.commandFor(self.nodeSpraying, 'l'.encode(), [0x10] + [0x01] + COLORS.listFromTuple(COLORS.BLACK)))
-      result.append(DisplayProgram.commandFor(self.nodeSpraying, 'S'.encode(), [0x00]))
-
-      self.nodeSpraying = self.nodeSpraying + 1
-      if self.nodeSpraying >= self.nodeCount:
-        self.nodeSpraying = 0
-
-      for offset in range(0, 1) :
-        address = self.addressFor(self.nodeSpraying, offset)
-        result.append(DisplayProgram.commandFor(address, 'l'.encode(), [0x10] + [0x01] + COLORS.listFromTuple(self.colorSet[self.colorPosition])))
-        result.append(DisplayProgram.commandFor(address, 'S'.encode(), [0x01]))
-        self.colorPosition = (self.colorPosition + 1) % len(self.colorSet)
-
-    return result
 
 class PyManMain:
   """The Main PyMan Class – This class handles the main
@@ -137,9 +75,9 @@ class PyManMain:
   def __init__(self):
     self.lastTime = time.clock()*1000
 
-    self.program = DisplayProgram()
+    self.program = ImageParserProgram(nodes= [1, 2, 3])
 
-    self.nodes = [SprayerNode(0x01,(320+100, 75), 180-45)]
+    self.nodes = [SprayerNode(0x01,(320+100, 75), 180-45), SprayerNode(0x02,(320+100, 75), 180-45), SprayerNode(0x03,(320+100, 75), 180-45)]
 
     try:
       SERIAL
