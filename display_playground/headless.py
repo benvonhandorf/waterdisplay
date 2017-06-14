@@ -8,7 +8,7 @@ from image_parser_program import ImageParserProgram
 
 
 # SERIAL = "/dev/tty.usbserial-00001014"
-# SERIAL = "/dev/ttyAMA0"
+SERIAL = "/dev/ttyAMA0"
 
 class SprayerNode:
   RADIUS = 20
