@@ -75,9 +75,9 @@ class PyManMain:
   def __init__(self):
     self.lastTime = time.clock()*1000
 
-    self.program = ImageParserProgram(nodes= [1, 2, 3])
+    self.program = ImageParserProgram(nodes= [2])
 
-    self.nodes = [SprayerNode(0x01,(320+100, 75), 180-45), SprayerNode(0x02,(320+100, 75), 180-45), SprayerNode(0x03,(320+100, 75), 180-45)]
+    self.nodes = [SprayerNode(0x02,(320+100, 75), 180-45)]
 
     try:
       SERIAL
@@ -99,6 +99,7 @@ class PyManMain:
       serialData = self.serial.read(100)
       serialString = str(serialData, 'utf-8')
       while ackString not in serialString:
+        print("No Ack Yet:" + serialString)
         serialData += self.serial.read(100)
         serialString = str(serialData, 'utf-8')
 
