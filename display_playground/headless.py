@@ -92,6 +92,19 @@ class PyManMain:
       if serialData is not None and len(serialData) > 0:
         print("Serial:" + str(serialData))
 
+  def readAck(self, command):
+    if self.serial is not None:
+      commandByte = chr(command[1])
+      ackString = "ACK-%c".format(commandByte)
+      serialData = self.serial.read(100)
+      serialString = str(serialData, 'utf-8')
+      while ackString not in serialString:
+        serialData += self.serial.read(100)
+        serialString = str(serialData, 'utf-8')
+
+      if serialString is not None and len(serialString) > 0:
+        print("Serial:" + serialString)
+
 
   def MainLoop(self):
     while 1:
@@ -105,6 +118,7 @@ class PyManMain:
         print(command)
         if self.serial is not None:
           self.serial.write(command)
+          self.readAck(command)
 
       self.readSerial()
 

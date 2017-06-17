@@ -18,6 +18,12 @@ extern FADE_DATA_T fadeData;
 
 CIRCULAR_BUFFER commandBuffer ;
 
+void controller_ack(char cmd) {
+  uart_write("ACK-", 4);
+  uart_write(&cmd, 1);
+  uart_write("\n",1);
+}
+
 
 void controller_dump_state() {
   char buffer[10];
@@ -69,6 +75,7 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
           buffer_consume(&commandBuffer, 1);
           commandStart++;
           availableBytes--;
+          controller_ack('D');
           break;
         case 'F':
           controller_off();
@@ -76,6 +83,7 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
           buffer_consume(&commandBuffer, 1);
           commandStart++;
           availableBytes--;
+          controller_ack('F');
           break;
         case 'S':
           if(availableBytes >= 2) {
@@ -94,6 +102,7 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
             commandStart++;
             availableBytes--;
             buffer_consume(&commandBuffer, 1);
+            controller_ack('S');
           } else {
             continueParsing = 0;
           }
@@ -121,6 +130,8 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
             availableBytes -= bytesInCommand;
             commandStart += bytesInCommand;
             buffer_consume(&commandBuffer, bytesInCommand);
+
+            controller_ack('L');
           } else {
             continueParsing = 0;
           }
@@ -148,6 +159,7 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
             availableBytes -= bytesInCommand;
             commandStart += bytesInCommand;
             buffer_consume(&commandBuffer, bytesInCommand);
+            controller_ack('l');
           } else {
             continueParsing = 0;
           }
@@ -171,6 +183,7 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
               uart_write_batch(&proposedAddress, 1);
               uart_write_batch("\n", 1);
               uart_flush_batch();
+              controller_ack('A');
             }
           } else {
             continueParsing = 0;
