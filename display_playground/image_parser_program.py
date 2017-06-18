@@ -54,7 +54,7 @@ class ImageParserProgram( DisplayProgram ):
         imageVal = self.image[int(position[0])][int(position[1])]
         imageVal = list(map( lambda x: x >> 1, imageVal.tolist()))
 
-        result.append(DisplayProgram.commandFor(node, 'l'.encode(), [0x03] + [0x01] + imageVal + [0x00]))
+        result.append(DisplayProgram.commandFor(node, 'L'.encode(),  [0x01] + imageVal + [0x00]))
         if numpy.average(imageVal) > self.sprayerThreshold:
           result.append(DisplayProgram.commandFor(node, 'S'.encode(), [0x01]))
         else :
