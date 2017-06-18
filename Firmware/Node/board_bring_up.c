@@ -65,9 +65,6 @@ void main() {
 
   while(1) {
     int bytesReceived = uart_read(buffer, 32);
-    if(bytesReceived > 0) {
-      solenoid_write(1);
-    }
     controller_add_bytes(buffer, bytesReceived);
   }
 }

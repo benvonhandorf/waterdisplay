@@ -7,7 +7,7 @@ import numpy
 
 class ImageParserProgram( DisplayProgram ):
   def __init__(self, sourceImage = "source_image.jpg", nodes = [1]):
-    self.image = io.imread(sourceImage)
+    self.image = io.imread(sourceImage)[0]
     self.imageSize = self.image.shape
     self.timeToNextCommand = 0
     self.sprayerThreshold = numpy.average(self.image) * 0.85
@@ -54,7 +54,7 @@ class ImageParserProgram( DisplayProgram ):
         imageVal = self.image[int(position[0])][int(position[1])]
         imageVal = list(map( lambda x: x >> 1, imageVal.tolist()))
 
-        result.append(DisplayProgram.commandFor(node, 'l'.encode(), [0x03] + [0x01] + imageVal))
+        result.append(DisplayProgram.commandFor(node, 'l'.encode(), [0x03] + [0x01] + imageVal + [0x00]))
         if numpy.average(imageVal) > self.sprayerThreshold:
           result.append(DisplayProgram.commandFor(node, 'S'.encode(), [0x01]))
         else :

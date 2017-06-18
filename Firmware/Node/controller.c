@@ -54,6 +54,129 @@ void controller_off() {
   led_off();
 }
 
+uint8_t controller_D(uint8_t *commandBuffer, uint8_t availableBytes) {
+  int bytes_required = 1;
+  if(availableBytes >= bytes_required) {
+    controller_dump_state();
+
+    controller_ack('D');
+
+    return bytes_required;
+  } else {
+    return 0;
+  }
+}
+
+uint8_t controller_A(uint8_t *commandBuffer, uint8_t availableBytes) {
+  int bytes_required = 2;
+  if(availableBytes >= bytes_required) {
+    uint8_t proposedAddress = commandBuffer[1] ;
+
+    if(proposedAddress == 0
+      || proposedAddress > 0x0F) {
+      uart_write("Invalid address\n", 16);
+    } else {
+      proposedAddress = configuration_set(CNF_ADDR, proposedAddress);
+      uart_write_batch("New Addr: ", 10);
+      uart_write_batch(&proposedAddress, 1);
+      uart_write_batch("\n", 1);
+      uart_flush_batch();
+      controller_ack('A');
+    }
+
+    return bytes_required;
+  } else {
+    return 0;
+  }
+}
+
+uint8_t controller_F(uint8_t *commandBuffer, uint8_t availableBytes) {
+  int bytes_required = 1;
+  if(availableBytes >= bytes_required) {
+    controller_off();
+
+    controller_ack('F');
+
+    return bytes_required;
+  } else {
+    return 0;
+  }
+}
+
+uint8_t controller_S(uint8_t *commandBuffer, uint8_t availableBytes) {
+  int bytes_required = 2;
+  if(availableBytes >= bytes_required) {
+    uint8_t solenoidCommand ;
+
+    solenoidCommand = commandBuffer[1];
+
+    solenoid_write(solenoidCommand);
+
+    controller_ack('S');
+
+    return bytes_required;
+  } else {
+    return 0;
+  }
+}
+
+uint8_t controller_L(uint8_t *commandBuffer, uint8_t availableBytes) {
+  int bytes_required = 2; //Minimum
+  int leds = 1; //Minimum
+  int led_offset = 2;
+  if(availableBytes >= bytes_required) {
+    leds = *(commandBuffer+1);
+
+    bytes_required = led_offset + (4 * leds);
+  }
+
+  if(availableBytes >= bytes_required) {
+    uint8_t i = 0;
+
+    for(i = led_offset ; i < bytes_required; i++ ) {
+      //Left shift bytes of LED data by 1 bit to handle MSB issues.
+      commandBuffer[i] = commandBuffer[i] << 1;
+    }    
+
+    led_write_values(leds, commandBuffer + led_offset);
+
+    controller_ack('L');
+
+    return bytes_required;
+  } else {
+    return 0;
+  }
+}
+
+uint8_t controller_l(uint8_t *commandBuffer, uint8_t availableBytes) {
+  int bytes_required = 3; //Minimum
+  int leds = 1; //Minimum
+  int led_offset = 3;
+  if(availableBytes >= bytes_required) {
+    leds = commandBuffer[2];
+
+    bytes_required = led_offset + (4 * leds);
+  }
+
+  if(availableBytes >= bytes_required) {
+    uint8_t i = 0;
+    uint8_t delay = commandBuffer[1];
+
+    for(i = led_offset ; i < bytes_required; i++ ) {
+      //Left shift bytes of LED data by 1 bit to handle MSB issues.
+      commandBuffer[i] = commandBuffer[i] << 1;
+    }    
+
+    led_write_fade_target(delay, leds, commandBuffer + led_offset);
+
+    controller_ack('l');
+
+    return bytes_required;
+  } else {
+    return 0;
+  }
+}
+
 void controller_add_bytes(uint8_t *bytes, uint8_t length) {
   uint8_t availableBytes;
   uint8_t continueParsing = 1;
@@ -67,128 +190,26 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
 
     while(availableBytes > 0 && continueParsing) {
       uint8_t leds = 1; //We will have AT LEAST 1 LED for any LED command
+      uint8_t bytes_consumed = 0;
 
       switch(*commandStart) {
         case 'D':
-          controller_dump_state();
-          continueParsing = 1;
-          buffer_consume(&commandBuffer, 1);
-          commandStart++;
-          availableBytes--;
-          controller_ack('D');
+          bytes_consumed = controller_D(commandStart, availableBytes);
           break;
         case 'F':
-          controller_off();
-          continueParsing = 1;
-          buffer_consume(&commandBuffer, 1);
-          commandStart++;
-          availableBytes--;
-          controller_ack('F');
+          bytes_consumed = controller_F(commandStart, availableBytes);
           break;
         case 'S':
-          if(availableBytes >= 2) {
-            uint8_t solenoidCommand ;
-            
-            //Consume the command
-            commandStart++;
-            availableBytes--;
-            buffer_consume(&commandBuffer, 1);
-
-            solenoidCommand = *commandStart;
-
-            solenoid_write(solenoidCommand);
-
-            //Consume the parameter
-            commandStart++;
-            availableBytes--;
-            buffer_consume(&commandBuffer, 1);
-            controller_ack('S');
-          } else {
-            continueParsing = 0;
-          }
+          bytes_consumed = controller_S(commandStart, availableBytes);
           break;
         case 'L':
-          if(availableBytes > 2) {
-            leds = *(commandStart + 1);
-          } 
-
-          if(availableBytes >= 2 + (4 * leds)) {
-            int bytesInCommand = 2 + (4 * leds);
-            uint8_t i = 0;
-  
-            for(i = 2 ; i < bytesInCommand; i++ ) {
-              //Left shift bytes of LED data by 1 bit to handle MSB issues.
-              commandStart[i] = commandStart[i] << 1;
-            }
-
-  
-
-            //We actually have the necessary number of bytes.  
-            led_write_values(leds, commandStart + 2);
-
-            //Consume the command
-            availableBytes -= bytesInCommand;
-            commandStart += bytesInCommand;
-            buffer_consume(&commandBuffer, bytesInCommand);
-
-            controller_ack('L');
-          } else {
-            continueParsing = 0;
-          }
-
+          bytes_consumed = controller_L(commandStart, availableBytes);
           break;
         case 'l':
-          if(availableBytes > 3) {
-            leds = *(commandStart + 2);
-          } 
-
-          if(availableBytes >= 3 + (4 * leds)) {
-            int bytesInCommand = 3 + (4 * leds);
-            int fadeDuration = *(commandStart + 1);
-            uint8_t i = 0;
-
-            for(i = 3 ; i < bytesInCommand; i++ ) {
-              //Left shift bytes of LED data by 1 bit to handle MSB issues.
-              commandStart[i] = commandStart[i] << 1;
-            }
-
-            //We actually have the necessary number of bytes.  
-            led_write_fade_target(fadeDuration, leds, commandStart + 3);
-            
-            //Consume the command
-            availableBytes -= bytesInCommand;
-            commandStart += bytesInCommand;
-            buffer_consume(&commandBuffer, bytesInCommand);
-            controller_ack('l');
-          } else {
-            continueParsing = 0;
-          }
-
+          bytes_consumed = controller_l(commandStart, availableBytes);
           break;
         case 'A':
-          if(availableBytes >= 2) {
-            uint8_t proposedAddress = *(commandStart + 1);
-
-            availableBytes -= 2;
-            commandStart += 2;
-            buffer_consume(&commandBuffer, 2);
-
-            if(proposedAddress == 0
-              || proposedAddress > 0x0F) {
-              uart_write("Invalid address\n", 16);
-              continue;
-            } else {
-              proposedAddress = configuration_set(CNF_ADDR, proposedAddress);
-              uart_write_batch("New Addr: ", 10);
-              uart_write_batch(&proposedAddress, 1);
-              uart_write_batch("\n", 1);
-              uart_flush_batch();
-              controller_ack('A');
-            }
-          } else {
-            continueParsing = 0;
-          }
-
+          bytes_consumed = controller_A(commandStart, availableBytes);
           break;
         default:
           //Start of the buffer is a command we don't recognize or a random byte.  We need to move on.
@@ -197,11 +218,17 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
           uart_write_batch("\n", 1);
           uart_flush_batch();
 
-          availableBytes--;
-          commandStart++;
-          buffer_consume(&commandBuffer, 1);
+          bytes_consumed = 1;
 
           break;
+      }
+
+      if(bytes_consumed > 0) {
+        commandStart += bytes_consumed;
+        availableBytes -= bytes_consumed;
+        buffer_consume(&commandBuffer, bytes_consumed);
+      } else {
+        continueParsing = 0;
       }
     }
   }

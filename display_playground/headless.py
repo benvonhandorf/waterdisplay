@@ -5,10 +5,11 @@ import time
 from colors import COLORS
 #from simple_display_program import SimpleDisplayProgram
 from image_parser_program import ImageParserProgram
+from time import sleep
 
 
-# SERIAL = "/dev/tty.usbserial-00001014"
-SERIAL = "/dev/ttyAMA0"
+SERIAL = "/dev/tty.usbserial-00001014"
+# SERIAL = "/dev/ttyAMA0"
 
 class SprayerNode:
   RADIUS = 20
@@ -95,13 +96,16 @@ class PyManMain:
   def readAck(self, command):
     if self.serial is not None:
       commandByte = chr(command[1])
-      ackString = "ACK-%c".format(commandByte)
-      serialData = self.serial.read(100)
-      serialString = str(serialData, 'utf-8')
+      ackString = "ACK-{}".format(commandByte)
+      print("Ack string will be:" + ackString)
+      serialData = bytearray()
+      serialData.extend(self.serial.read(100))
+      serialString = str(serialData)
       while ackString not in serialString:
         print("No Ack Yet:" + serialString)
-        serialData += self.serial.read(100)
-        serialString = str(serialData, 'utf-8')
+        serialData.extend(self.serial.read(100))
+        serialString = str(serialData)
+        sleep(0.1)
 
       if serialString is not None and len(serialString) > 0:
         print("Serial:" + serialString)
