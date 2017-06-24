@@ -57,10 +57,12 @@ uint8_t txByte() {
 void uart1_tx_isr() {
   // The vector is used for multiple purposes, check that TXE is indeed set.
   if (UART1_SR & UART_SR_TXE) {
+    smi();
     if (!txByte()) {
       // Transfer complete. Disable tx interrupts.
       CLRBIT(UART1_CR2, UART_CR2_TIEN);
     }
+    rmi();
   }
 }
 
@@ -69,45 +71,44 @@ void uart1_rx_isr() {
     char dataByte = UART1_DR;
     uint8_t bytesCopied;
 
+    smi();
+
     if(nodeAddress == 0
         || dataByte != (0x80 | nodeAddress)) {
       bytesCopied = buffer_copy_from(&receiveBuffer, &dataByte, 1);
     }
+
+    rmi();
   }
 }
 
 uint8_t uart_write(char *buffer, uint8_t size) {
   uint8_t bytesWritten ;
 
+  smi();
+
 	bytesWritten = buffer_copy_from(&transmitBuffer, buffer, size);
 
   SETBIT(UART1_CR2, UART_CR2_TIEN);
 
-  return bytesWritten;
-}
-
-uint8_t uart_write_batch(char *buffer, uint8_t size) {
-  uint8_t bytesWritten ;
-
-  bytesWritten = buffer_copy_from(&transmitBuffer, buffer, size);
+  rmi();
 
   return bytesWritten;
 }
-
-uint8_t uart_flush_batch() {
-  SETBIT(UART1_CR2, UART_CR2_TIEN);
-
-  return buffer_bytes(&transmitBuffer);
-}
-
 
 uint8_t uart_bytes_available() {
     return buffer_bytes(&receiveBuffer);
 }
 
 uint8_t uart_read(char *buffer, uint8_t size) {
-    uint8_t bytesRead = buffer_copy_to(&receiveBuffer, buffer, size);
+    uint8_t bytesRead;
+    
+    smi();
+    
+    bytesRead = buffer_copy_to(&receiveBuffer, buffer, size);
     buffer_consume(&receiveBuffer, bytesRead);
+
+    rmi();
 
     return bytesRead;
 }

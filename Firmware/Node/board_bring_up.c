@@ -6,12 +6,13 @@
 #include "led_driver.h"
 #include "controller.h"
 #include "configuration.h"
-
-volatile uint8_t solenoid_active = 0;
+#include "status_driver.h"
 
 #ifndef DEFAULT_NODE_ADDRESS
 #define DEFAULT_NODE_ADDRESS 0x01
 #endif
+
+volatile uint8_t fade_cycles = 0;
 
 void uart1_tx_isr_handler(void) __interrupt(UART1_TXE_vector) {
   uart1_tx_isr();
@@ -23,7 +24,7 @@ void uart1_rx_isr_handler(void) __interrupt(UART1_RXF_vector) {
 
 void tim2_isr(void) __interrupt(TIM2_OVF_vector) {
   if(TIM2_SR1 & TIM_SR1_UIF){
-    led_fade();
+    fade_cycles++;
     CLRBIT(TIM2_SR1, TIM_SR1_UIF);
   }
 }
@@ -46,6 +47,8 @@ void main() {
   uint8_t bytesReceived = 0;
   uint8_t nodeAddress = configuration_get(CNF_ADDR);
 
+  smi();
+
   CLK_DIVR = 0x00;
   CLK_PCKENR1 = 0xFF;
 
@@ -58,13 +61,29 @@ void main() {
   solenoid_init();
   led_init(1);
   controller_init();
+  status_init();
 
   tim2_init();
 
-  rmi();
+  rmi();  
+
+  status_set(STATUS_ONE);
 
   while(1) {
+    uint8_t i ;
     int bytesReceived = uart_read(buffer, 32);
     controller_add_bytes(buffer, bytesReceived);
+
+    for(i = 0; i < fade_cycles; i++) {
+       led_fade();
+    }
+
+    fade_cycles = 0;
+
+    if(bytesReceived) {
+      status_set(STATUS_ONE);
+    } else {
+      status_clear(STATUS_ONE);
+    }
   }
 }

@@ -29,23 +29,6 @@ uint8_t uart_write(char *buffer, uint8_t size) {
 	return 0;
 }
 
-uint8_t uart_write_batch(char *buffer, uint8_t size) {
-	int i = 0;
-	fprintf(stdout, "uart: write batch \'");
-
-	for(i = 0; i < size; i++) {
-		fprintf(stdout, "%c", buffer[i]);
-	}
-
-	fprintf(stdout, "\'\n");
-	return 0;
-}
-
-uint8_t uart_flush_batch() {
-	fprintf(stdout, "uart: flush batch \n");
-}
-
-
 uint8_t uart_bytes_available() {
 	return 0;
 }

@@ -98,9 +98,13 @@ class PyManMain:
       commandByte = chr(command[1])
       ackString = "ACK-{}".format(commandByte)
       serialData = bytearray()
+      displayedLength = 0
       serialData.extend(self.serial.read(100))
       serialString = str(serialData)
       while ackString not in serialString:
+        if serialString and len(serialData) > displayedLength:
+          print("Partial RX:" + serialString + " looking for {}".format(ackString))
+          displayedLength = len(serialData)
         serialData.extend(self.serial.read(100))
         serialString = str(serialData)
         sleep(0.1)
@@ -121,12 +125,17 @@ class PyManMain:
 
       for command in commands:
         appendedCommands.extend(command)
-
-      if len(appendedCommands) > 0:
-        print("TX:" + str(appendedCommands))
+        print("TX:" + str(command))
         if self.serial is not None:
-          self.serial.write(appendedCommands)
-          # self.readAck(command)
+          self.serial.write(command)
+          self.readAck(command)
+
+
+      # if len(appendedCommands) > 0:
+      #   print("TX:" + str(appendedCommands))
+      #   if self.serial is not None:
+      #     self.serial.write(appendedCommands)
+      #     self.readAck(command)
 
       self.readSerial()
 

@@ -1,12 +1,13 @@
 #include <stdint.h>
+#include <stdio.h> 
+#include <string.h>
 #include "controller.h"
 #include "solenoid_driver.h"
 #include "led_driver.h"
 #include "circular_buffer.h"
 #include "uart_driver.h"
-#include <stdio.h> 
-#include <string.h>
 #include "configuration.h" 
+#include "status_driver.h"
 
 #ifndef FIRMWARE_VERSION
 #define FIRMWARE_VERSION "0.0.3"
@@ -77,10 +78,9 @@ uint8_t controller_A(uint8_t *commandBuffer, uint8_t availableBytes) {
       uart_write("Invalid address\n", 16);
     } else {
       proposedAddress = configuration_set(CNF_ADDR, proposedAddress);
-      uart_write_batch("New Addr: ", 10);
-      uart_write_batch(&proposedAddress, 1);
-      uart_write_batch("\n", 1);
-      uart_flush_batch();
+      uart_write("New Addr: ", 10);
+      uart_write(&proposedAddress, 1);
+      uart_write("\n", 1);
       controller_ack('A');
     }
 
@@ -184,6 +184,8 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
 
   availableBytes = buffer_bytes(&commandBuffer);
 
+  status_set(STATUS_TWO);
+
   if(availableBytes > 0) {
     uint8_t *commandStart = parseBuffer;
     availableBytes = buffer_copy_to(&commandBuffer, parseBuffer, 32);
@@ -213,10 +215,9 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
           break;
         default:
           //Start of the buffer is a command we don't recognize or a random byte.  We need to move on.
-          uart_write_batch("Unknown:", 8);
-          uart_write_batch(commandStart, 1);
-          uart_write_batch("\n", 1);
-          uart_flush_batch();
+          uart_write("U:", 2);
+          uart_write(commandStart, 1);
+          uart_write("\n", 1);
 
           bytes_consumed = 1;
 
@@ -227,9 +228,15 @@ void controller_add_bytes(uint8_t *bytes, uint8_t length) {
         commandStart += bytes_consumed;
         availableBytes -= bytes_consumed;
         buffer_consume(&commandBuffer, bytes_consumed);
+        uart_write("N:", 2);
+        uart_write(&bytes_consumed, 1);
+        uart_write(&availableBytes, 1);
+        uart_write("\n", 1);
       } else {
         continueParsing = 0;
       }
     }
   }
+
+  status_clear(STATUS_TWO);
 }
