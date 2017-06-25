@@ -67,6 +67,9 @@ void main() {
 
   tim4_init();
 
+  IWDG_KR = 0xCC;
+  IWDG_PR = 0x02;
+
   rmi();  
 
   status_set(STATUS_ONE);
@@ -79,6 +82,8 @@ void main() {
     for(i = 0; i < fade_cycles; i++) {
        led_fade();
     }
+
+    IWDG_KR = 0xAA;
 
     fade_cycles = 0;
 
