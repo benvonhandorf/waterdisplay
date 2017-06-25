@@ -66,8 +66,8 @@ void status_clear(uint8_t status_bit) {
 }
 
 void status_toggle(uint8_t status_bit) {
-  volatile uint8_t portValue;
-  uint8_t mask;
+  uint8_t portValue = 0;
+  uint8_t mask = 0;
 
   switch(status_bit){
     case STATUS_ONE:

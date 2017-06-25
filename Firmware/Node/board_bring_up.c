@@ -13,6 +13,7 @@
 #endif
 
 volatile uint8_t fade_cycles = 0;
+volatile uint8_t timer_counter = 0;
 
 void uart1_tx_isr_handler(void) __interrupt(UART1_TXE_vector) {
   uart1_tx_isr();
@@ -22,22 +23,23 @@ void uart1_rx_isr_handler(void) __interrupt(UART1_RXF_vector) {
   uart1_rx_isr();
 }
 
-void tim2_isr(void) __interrupt(TIM2_OVF_vector) {
-  if(TIM2_SR1 & TIM_SR1_UIF){
-    fade_cycles++;
-    CLRBIT(TIM2_SR1, TIM_SR1_UIF);
+void tim4_isr(void) __interrupt(TIM4_vector) {
+  if(TIM4_SR & TIM_SR1_UIF){
+    timer_counter++;
+    if(timer_counter == 25) {
+      timer_counter = 0;
+      fade_cycles++;
+    }
+    CLRBIT(TIM4_SR, TIM_SR1_UIF);
   }
 }
 
-void tim2_init() {
+void tim4_init() {
   //Targeting a 50ms timer
-  TIM2_PSCR = 0x0F; //Prescaler = 2 ^ 15
+  TIM4_PSCR = 0x07; //Prescaler = 128
 
-  TIM2_ARRH = 0x00;
-  TIM2_ARRL = 24;
-
-  SETBIT(TIM2_IER, TIM_IER_UIE);
-  SETBIT(TIM2_CR1, TIM_CR1_CEN);
+  SETBIT(TIM4_IER, TIM_IER_UIE);
+  SETBIT(TIM4_CR1, TIM_CR1_CEN);
 }
 
 uint8_t RED[] = {0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00};
@@ -63,7 +65,7 @@ void main() {
   controller_init();
   status_init();
 
-  tim2_init();
+  tim4_init();
 
   rmi();  
 
