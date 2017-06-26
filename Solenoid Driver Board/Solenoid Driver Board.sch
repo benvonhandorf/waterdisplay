@@ -542,11 +542,11 @@ F 3 "" H 6300 5900 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text GLabel 6500 2300 2    60   Input ~ 0
-CH1
+CH0
 Text GLabel 3900 2600 0    60   Input ~ 0
-CH3
-Text GLabel 6500 3000 2    60   Input ~ 0
 CH2
+Text GLabel 6500 3000 2    60   Input ~ 0
+CH1
 $Comp
 L R R6
 U 1 1 594EFD63
@@ -657,7 +657,7 @@ F 3 "" H 5550 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text GLabel 5750 750  0    60   Input ~ 0
-CH1
+CH0
 Wire Wire Line
 	5900 1100 6000 1100
 $Comp
@@ -851,7 +851,7 @@ F 3 "" H 6400 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text GLabel 6600 750  0    60   Input ~ 0
-CH2
+CH1
 Wire Wire Line
 	6750 1100 6850 1100
 $Comp
@@ -922,7 +922,7 @@ F 3 "" H 7250 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text GLabel 7450 750  0    60   Input ~ 0
-CH3
+CH2
 Wire Wire Line
 	7600 1100 7700 1100
 $Comp

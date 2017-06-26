@@ -177,28 +177,28 @@ F 3 "" H 9000 5600 50  0001 C CNN
 	1    9000 5600
 	1    0    0    -1  
 $EndComp
-Text GLabel 8750 5550 0    60   Input ~ 0
+Text GLabel 8750 5650 0    60   Input ~ 0
 SWIM
 $Comp
 L GND #PWR06
 U 1 1 58F57AF4
-P 8750 5650
-F 0 "#PWR06" H 8750 5400 50  0001 C CNN
-F 1 "GND" H 8750 5500 50  0000 C CNN
-F 2 "" H 8750 5650 50  0001 C CNN
-F 3 "" H 8750 5650 50  0001 C CNN
-	1    8750 5650
+P 8750 5550
+F 0 "#PWR06" H 8750 5300 50  0001 C CNN
+F 1 "GND" H 8750 5400 50  0000 C CNN
+F 2 "" H 8750 5550 50  0001 C CNN
+F 3 "" H 8750 5550 50  0001 C CNN
+	1    8750 5550
 	0    1    1    0   
 $EndComp
 $Comp
 L +5V #PWR07
 U 1 1 58F57B17
-P 8750 5450
-F 0 "#PWR07" H 8750 5300 50  0001 C CNN
-F 1 "+5V" H 8750 5590 50  0000 C CNN
-F 2 "" H 8750 5450 50  0001 C CNN
-F 3 "" H 8750 5450 50  0001 C CNN
-	1    8750 5450
+P 8750 5750
+F 0 "#PWR07" H 8750 5600 50  0001 C CNN
+F 1 "+5V" H 8750 5890 50  0000 C CNN
+F 2 "" H 8750 5750 50  0001 C CNN
+F 3 "" H 8750 5750 50  0001 C CNN
+	1    8750 5750
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
@@ -462,7 +462,7 @@ NRST
 Connection ~ 2400 4400
 Text GLabel 3850 2100 0    60   Input ~ 0
 NRST
-Text GLabel 8750 5750 0    60   Input ~ 0
+Text GLabel 8750 5450 0    60   Input ~ 0
 RST
 Wire Wire Line
 	1800 1400 2300 1400
@@ -542,11 +542,11 @@ F 3 "" H 6300 5900 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text GLabel 6500 2300 2    60   Input ~ 0
-CH1
+CH0
 Text GLabel 3900 2600 0    60   Input ~ 0
-CH3
-Text GLabel 6500 3000 2    60   Input ~ 0
 CH2
+Text GLabel 6500 3000 2    60   Input ~ 0
+CH1
 $Comp
 L R R6
 U 1 1 594EFD63
