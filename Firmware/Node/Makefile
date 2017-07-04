@@ -17,6 +17,12 @@ board_bring_up.ihx: board_bring_up.rel $(DRIVERS)
 flash: board_bring_up.ihx
 	sudo stm8flash -cstlinkv2 -pstm8s103f3 -w board_bring_up.ihx
 
+pwm_test.ihx: pwm_test.rel
+	$(CC) $(CFLAGS) pwm_test.rel --out-fmt-ihx -o pwm_test.ihx
+
+flash_pwm: pwm_test.ihx
+	sudo stm8flash -cstlinkv2 -pstm8s103f3 -w pwm_test.ihx
+
 clean:
 	rm -f *.asm *.ihx *.cdb *.lst *.map *.lk *.rel *.rst *.sym *.o
 

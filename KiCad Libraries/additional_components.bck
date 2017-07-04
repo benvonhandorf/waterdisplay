@@ -1,5 +1,11 @@
 EESchema-DOCLIB  Version 2.0
 #
+$CMP 2N2222-TO92
+D NPN General Purpose Amplifier
+K NPN, transistor, 2222, 2n2222
+F http://www.fairchildsemi.com/ds/MM/MMBT2222.pdf
+$ENDCMP
+#
 $CMP AMS1117
 D 1A Low Dropout regulator, positive, adjustable output, NRND
 K linear regulator ldo adjustable positive
