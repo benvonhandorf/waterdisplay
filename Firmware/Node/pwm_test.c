@@ -5,7 +5,7 @@
 volatile uint8_t fade_cycles = 0;
 volatile uint8_t timer_counter = 0;
 volatile uint8_t pwm_cycle = 0;
-volatile int8_t delta = 10;
+volatile int8_t delta = 5;
 
 void tim4_isr(void) __interrupt(TIM4_vector) {
   if(TIM4_SR & TIM_SR1_UIF){
@@ -66,10 +66,10 @@ void main() {
 
 
       if(pwm_cycle > 240) {
-        delta = -10;
+        delta = -5;
         SETBIT(PB_ODR, 0x20);
       } else if( pwm_cycle < 10) {
-        delta = 10;
+        delta = 5;
         CLRBIT(PB_ODR, 0x20);
       }
       pwm_cycle +=delta;
