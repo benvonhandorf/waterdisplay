@@ -8,8 +8,8 @@ from image_parser_program import ImageParserProgram
 from time import sleep
 
 
-SERIAL = "/dev/tty.usbserial-00002014"
-# SERIAL = "/dev/ttyAMA0"
+# SERIAL = "/dev/tty.usbserial-00002014"
+SERIAL = "/dev/ttyAMA0"
 
 class SprayerNode:
   RADIUS = 20
