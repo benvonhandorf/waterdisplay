@@ -14,6 +14,9 @@ all: node_main.ihx
 node_main.ihx: node_main.rel $(DRIVERS)
 	$(CC) $(CFLAGS) node_main.rel $(DRIVERS) --out-fmt-ihx -o node_main.ihx
 
+flash_opt:
+	sudo stm8flash -cstlinkv2 -pstm8s103f3 -s 0x4803 -b 2 -w pin15_option_bit.hex
+	
 flash: node_main.ihx
 	sudo stm8flash -cstlinkv2 -pstm8s103f3 -w node_mainf.ihx
 
