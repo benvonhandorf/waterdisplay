@@ -27,9 +27,9 @@ void tim4_init() {
 }
 
 void tim2_init() {
-  SETBIT(PD_CR1, 0x10);
+  //SETBIT(PD_CR1, 0x10);
 
-  TIM2_PSCR = 0x03; //Prescaler = 2
+  TIM2_PSCR = 0x00; //Prescaler = 2
 
   TIM2_ARRH = 0x00;
   TIM2_ARRL = 0xFF;

@@ -29,13 +29,10 @@ void tim4_init() {
 }
 
 void tim2_init() {
-  TIM2_PSCR = 0x03; //Prescaler = 2
+  TIM2_PSCR = 0x03; //Prescaler
 
   TIM2_ARRH = 0x00;
   TIM2_ARRL = 0xFF;
-
-  TIM2_CCER1 = 0x01 | 0x10; //CC1 and 2 enabled
-  TIM2_CCER2 = 0x01; //CC3 enabled
 
   TIM2_CCMR1 = 0x78; //PWM Mode 111, Preload register enabled
 
@@ -52,6 +49,11 @@ void tim2_init() {
   TIM2_CCR3H = 0x00;
   TIM2_CCR3L = 0xFF;
 
+  TIM2_CCER1 = 0x01 | 0x10; //CC1 and 2 enabled
+  TIM2_CCER2 = 0x01; //CC3 enabled
+
+
+
   SETBIT(TIM2_CR1, 0x80);
   SETBIT(TIM2_CR1, TIM_CR1_CEN);
 }
@@ -63,20 +65,20 @@ void main() {
   CLK_DIVR = 0x00;
   CLK_PCKENR1 = 0xFF;
 
-  //PWM Channel 0
-  SETBIT(PA_DDR, 0x08);
-  SETBIT(PA_CR1, 0x08);
-  CLRBIT(PA_ODR, 0x08);
+  // //PWM Channel 0
+  // SETBIT(PA_DDR, 0x08);
+  // SETBIT(PA_CR1, 0x08);
+  // CLRBIT(PA_ODR, 0x08);
 
-  //PWM Channel 1
-  SETBIT(PC_DDR, 0x20);
-  SETBIT(PC_CR1, 0x20);
-  CLRBIT(PC_ODR, 0x20);
+  // //PWM Channel 1
+  // SETBIT(PC_DDR, 0x20);
+  // SETBIT(PC_CR1, 0x20);
+  // CLRBIT(PC_ODR, 0x20);
 
-  //PWM Channel 2
-  SETBIT(PD_DDR, 0x08);
-  SETBIT(PD_CR1, 0x08);
-  CLRBIT(PD_ODR, 0x08);
+  // //PWM Channel 2
+  // SETBIT(PD_DDR, 0x08);
+  // SETBIT(PD_CR1, 0x08);
+  // CLRBIT(PD_ODR, 0x08);
 
   //Main Control 
   SETBIT(PC_DDR, 0x08);

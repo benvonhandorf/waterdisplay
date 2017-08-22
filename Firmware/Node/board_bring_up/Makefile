@@ -15,7 +15,7 @@ board_bring_up.ihx: board_bring_up.rel $(DRIVERS)
 	$(CC) $(CFLAGS) board_bring_up.rel $(DRIVERS) --out-fmt-ihx -o board_bring_up.ihx
 
 flash_opt:
-	sudo stm8flash -cstlinkv2 -pstm8s103f3 -s 0x4803 -b 2 -w pin15_option_bit.hex
+	sudo stm8flash -cstlinkv2 -pstm8s103f3 -s 0x4803 -b 2 -w pin15_option_bit
 
 flash: board_bring_up.ihx
 	sudo stm8flash -cstlinkv2 -pstm8s103f3 -w board_bring_up.ihx
