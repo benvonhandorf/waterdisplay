@@ -4,7 +4,7 @@ CFLAGS := -mstm8 --std-c99
 TESTCC := gcc
 TESTLD := gcc
 
-DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel pl9823_driver.rel led_driver.rel controller.rel configuration.rel status_driver.rel
+DRIVERS := uart_driver.rel solenoid_driver.rel circular_buffer.rel pl9823_driver.rel led_driver.rel controller.rel configuration.rel status_driver.rel pwm_led_driver.rel
 
 all: node_main.ihx
 
@@ -18,7 +18,7 @@ flash_opt:
 	sudo stm8flash -cstlinkv2 -pstm8s103f3 -s 0x4803 -b 2 -w pin15_option_bit.hex
 	
 flash: node_main.ihx
-	sudo stm8flash -cstlinkv2 -pstm8s103f3 -w node_mainf.ihx
+	sudo stm8flash -cstlinkv2 -pstm8s103f3 -w node_main.ihx
 
 clean:
 	rm -f *.asm *.ihx *.cdb *.lst *.map *.lk *.rel *.rst *.sym *.o

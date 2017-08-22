@@ -8,8 +8,8 @@ from image_parser_program import ImageParserProgram
 from time import sleep
 
 
-# SERIAL = "/dev/tty.usbserial-00002014"
-SERIAL = "/dev/ttyAMA0"
+SERIAL = "/dev/tty.usbserial-A1043345"
+#SERIAL = "/dev/ttyAMA0"
 
 class SprayerNode:
   RADIUS = 20
@@ -76,9 +76,9 @@ class PyManMain:
   def __init__(self):
     self.lastTime = time.clock()*1000
 
-    self.program = SimpleDisplayProgram(nodes=[2])
+    self.program = SimpleDisplayProgram(nodes=[1])
 
-    self.nodes = [SprayerNode(0x02,(320+100, 75), 180-45)]
+    self.nodes = [SprayerNode(0x01,(320+100, 75), 180-45)]
 
     try:
       SERIAL

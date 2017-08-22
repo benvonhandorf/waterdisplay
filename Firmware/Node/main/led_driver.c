@@ -2,7 +2,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include "led_driver.h"
+
+#if 0
+
 #include "pl9823_driver.h"
+
+void(*impl_init)() = &pl9823_init;
+void(*impl_write)(uint8_t *) = &pl9823_write_led;
+void(*impl_latch)() = &pl9823_latch;
+
+#else
+
+#include "pwm_led_driver.h"
+
+void(*impl_init)() = &pwmled_init;
+void(*impl_write)(uint8_t *) = &pwmled_write_led;
+void(*impl_latch)() = &pwmled_latch;
+
+#endif
 
 #define min(a, b) (a > b ? b : a)
 
@@ -19,10 +36,10 @@ void led_send_string() {
     LED_DATA_T *led = ledData + i;
 
     uint8_t *bytes = led->current;
-    pl9823_write_led(bytes);
+    impl_write(bytes);
   }
 
-  pl9823_latch(); 
+  impl_latch(); 
 }
 
 void led_init(uint8_t led_count) {
@@ -33,9 +50,9 @@ void led_init(uint8_t led_count) {
   fadeData.fadeTotal = 0;
   fadeData.fadeComplete = 0;
 
-  pl9823_init();
+  impl_init();
 
-  pl9823_latch(); 
+  impl_latch(); 
 
   led_off();
 }

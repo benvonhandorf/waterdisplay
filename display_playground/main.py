@@ -8,8 +8,8 @@ from pygame.locals import *
 if not pygame.font: print("Warning, fonts disabled")
 if not pygame.mixer: print("Warning, sound disabled")
 
-# SERIAL = "/dev/tty.usbserial-00001014"
-SERIAL = "/dev/ttyUSB0"
+SERIAL = "/dev/tty.usbserial-00401714"
+# SERIAL = "/dev/ttyUSB0"
 
 class COLORS:
 	BLACK = (  0,   0,   0, 0)
