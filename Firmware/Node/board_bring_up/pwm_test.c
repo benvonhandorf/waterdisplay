@@ -27,8 +27,6 @@ void tim4_init() {
 }
 
 void tim2_init() {
-  //SETBIT(PD_CR1, 0x10);
-
   TIM2_PSCR = 0x00; //Prescaler = 2
 
   TIM2_ARRH = 0x00;
@@ -65,10 +63,10 @@ void main() {
     for(i = 0; i < fade_cycles; i++) {
 
 
-      if(pwm_cycle > 240) {
+      if(pwm_cycle > 250) {
         delta = -5;
         SETBIT(PB_ODR, 0x20);
-      } else if( pwm_cycle < 10) {
+      } else if( pwm_cycle < 6) {
         delta = 5;
         CLRBIT(PB_ODR, 0x20);
       }
