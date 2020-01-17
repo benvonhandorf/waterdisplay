@@ -1,4 +1,4 @@
-update=Sunday, June 25, 2017 'PMt' 01:31:37 PM
+update=Wed 15 Nov 2017 11:58:55 AM EST
 version=1
 last_client=kicad
 [pcbnew]
@@ -25,6 +25,16 @@ version=1
 NetIExt=net
 [general]
 version=1
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
 [eeschema]
 version=1
 LibDir=../KiCad Libraries
@@ -63,13 +73,4 @@ LibName31=additional_components
 LibName32=diode
 LibName33=motors
 LibName34=SKyIronLogo
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=
-SpiceForceRefPrefix=0
-SpiceUseNetNumbers=0
-LabSize=60
+LibName35=/home/benvh/projects/kicad-library/Voltage Regulators/voltage-regulators
